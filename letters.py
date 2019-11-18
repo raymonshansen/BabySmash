@@ -4,7 +4,7 @@ import sys
 from random import randint
 
 import constants as cons
-from utils import rand_color
+from utils import rand_color, rand_screen_pos
 from particles import ParticleGenerator
 
 
@@ -24,12 +24,16 @@ def get_character(event_key):
 
 
 class Character():
-    def __init__(self, char):
+    def __init__(self, char, pos, size):
         self.char = char
-        self.font = pg.font.SysFont('ubuntumono', randint(540, 700), 1)
+        self.font = pg.font.SysFont('ubuntumono', size, 1)
         self.color = rand_color()
-        self.textsurf = self.font.render(self.char, True, rand_color())
-        self.pos = self.random_screen_pos()
+        self.origsurf = self.font.render(self.char, True, rand_color())
+        self.textsurf = self.origsurf.copy()
+        self.alphasurf = pg.Surface(self.textsurf.get_size(), pg.SRCALPHA)
+        self.alpha = 255
+        self.fading = False
+        self.pos = pos
 
     def get_rect(self):
         return pg.Rect(self.pos, self.textsurf.get_size())
@@ -40,13 +44,15 @@ class Character():
     def draw(self, screen):
         if self.char == ' ':
             return
+        if self.fading:
+            self.textsurf = self.origsurf.copy()
+            self.alphasurf.fill((255, 255, 255, self.alpha))
+            self.textsurf.blit(self.alphasurf, (0, 0), special_flags=pg.BLEND_RGBA_MULT)
+            self.alpha = max(self.alpha - 10, 0)
         screen.blit(self.textsurf, self.pos)
 
-    def random_screen_pos(self):
-        max_width, max_height = self.textsurf.get_size()
-        w = cons.WINDOW_WIDTH - max_width
-        h = cons.WINDOW_HEIGHT - max_height
-        return (randint(0, w), randint(0, h))
+    def fade_out(self):
+        self.fading = True
 
 
 class Game():
@@ -58,10 +64,10 @@ class Game():
         self.screen = pg.display.set_mode((self.width, self.height))
         self.clock = pg.time.Clock()
         self.running = True
-        self.char_buffer = [Character(' ')] * 4
+        self.char_buffer = [Character(' ', (0, 0), 1)] * 5
 
         # Is this a separate game?? :)
-        self.particle_generator = ParticleGenerator(0, 0, 1, self.screen, rand_color())
+        self.part_gen = ParticleGenerator(0, 0, 1, self.screen, rand_color())
 
     def run(self):
         self.screen.fill(pg.color.Color(cons.BACKGROUND_COLOR))
@@ -73,38 +79,58 @@ class Game():
         pg.quit()
         sys.exit(0)
 
+    def non_overlapping_character(self, char):
+        """Return a character_object that does not overlap
+        with any of the ones currently in the buffer."""
+        while True:
+            # TODO: This loop might never terminate!
+            size = randint(cons.MIN_LETTER_SIZE, cons.MAX_LETTER_SIZE)
+            # Get a random position within the confines of the screen
+            pos = rand_screen_pos(cons.WINDOW_WIDTH, cons.WINDOW_HEIGHT, size, size)
+            new_char_object = Character(char, pos, size)
+            # Chekc for overlapp
+            index = new_char_object.get_rect().collidelist(self.buffer_to_rects())
+            if index == -1:
+                break
+        return new_char_object
+
     def update(self):
         x, y = pg.mouse.get_pos()
-        self.particle_generator.reposition(x, y)
+        self.part_gen.reposition(x, y)
         for event in pg.event.get():
             if event.type == KEYDOWN:
                 char = get_character(event.key)
-                self.update_char_buffer(Character(char))
+                new_char = self.non_overlapping_character(char)
+                self.update_char_buffer(new_char)
+                self.char_buffer[0].fade_out()
             if event.type == MOUSEBUTTONDOWN:
-                self.particle_generator.active = True
-                self.particle_generator.set_color(rand_color())
+                self.part_gen.active = True
+                self.part_gen.set_color(rand_color())
             if event.type == MOUSEBUTTONUP:
-                self.particle_generator.active = False
-                self.particle_generator.clear()
+                self.part_gen.active = False
+                self.part_gen.clear()
         self.running = self.check_quit()
-        self.particle_generator.update()
+        self.part_gen.update()
 
     def draw(self):
         self.screen.fill(pg.color.Color(cons.BACKGROUND_COLOR))
-        latest_letter = self.char_buffer[-1]
-        latest_letter.draw(self.screen)
-        self.particle_generator.draw()
+        for letter in self.char_buffer:
+            letter.draw(self.screen)
+        self.part_gen.draw()
         pg.display.update()
 
     def buffer_to_string(self):
-        return ''.join([str(char) for char in self.char_buffer])
+        return ''.join(str(char) for char in self.char_buffer)
+    
+    def buffer_to_rects(self):
+        return [char.get_rect() for char in self.char_buffer]
 
     def update_char_buffer(self, new_char):
         self.char_buffer.append(new_char)
         self.char_buffer.pop(0)
 
     def check_quit(self):
-        return self.buffer_to_string() != 'QUIT'
+        return self.buffer_to_string()[-4:] != 'QUIT'
 
 
 if __name__ == "__main__":
