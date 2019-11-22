@@ -32,7 +32,7 @@ class Letters():
         self.screen = screen
         self.clock = pg.time.Clock()
         self.running = True
-        self.char_buffer = [Character(' ', (0, 0), 1)] * 5
+        self.char_buffer = [Character(' ', (0, 0), 3)] * 5
 
         # Is this a separate game?? :)
         self.part_gen = ParticleGenerator(0, 0, 1, self.screen, rand_color())
