@@ -2,7 +2,8 @@ import pygame as pg
 from random import randint
 import sys
 import constants as cons
-from letters import Letters
+from letters_game import Letters
+from numbers_game import Numbers
 from character import Character
 
 
@@ -115,12 +116,15 @@ class Application():
 
     def load_games(self):
         self.letters_game = Letters(self.screen, self.switch_state)
+        self.numbers_game = Numbers(self.screen, self.switch_state)
 
     def switch_state(self, state):
         if state == 'MAINMENU':
             self.current_state = self.main_menu
         elif state == 'LETTERS':
             self.current_state = self.letters_game
+        elif state == 'NUMBERS':
+            self.current_state = self.numbers_game
         elif state == 'QUIT':
             self.done = True
 
