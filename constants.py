@@ -35,6 +35,7 @@ MIN_LETTER_SIZE = 64
 
 MENU_ITEM_TEXTS = [
     ("Letters", "Hit a letter-key to display it on screen. Type 'quit' to return to main menu.", "LETTERS"),
-    ("EXIT", "Exit the program.", "QUIT")
+    ("Numbers", "Hit a number-key to display it and a corresponding number of ladybugs.", "NUMBERS"),
+    ("EXIT", "Exit the program.", "QUIT"),
     ]
 APP_NAME = "BabySmash"
