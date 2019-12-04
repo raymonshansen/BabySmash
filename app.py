@@ -7,23 +7,23 @@ from numbers_game import Numbers
 from character import Character
 
 
-class MenuItem():
+class MenuItem:
     def __init__(self, text, info, state):
         self.text = text
         self.color = pg.color.Color(cons.MENU_TEXT_COLOR)
         self.line_color = pg.color.Color(cons.BACKGROUND_COLOR)
-        self.font = pg.font.SysFont('ubuntumono', cons.MENU_TEXT_SIZE, 1)
+        self.font = pg.font.SysFont("ubuntumono", cons.MENU_TEXT_SIZE, 1)
         self.textsurf = self.font.render(text, True, self.color)
         self.info = info
         self.state = state
 
     def set_selected(self, selected):
         if selected:
-            self.font = pg.font.SysFont('ubuntumono', cons.MENU_SELECTED_TEXT_SIZE, 1)
+            self.font = pg.font.SysFont("ubuntumono", cons.MENU_SELECTED_TEXT_SIZE, 1)
             self.color = pg.color.Color(cons.MENU_SELECTED_COLOR)
             self.line_color = self.color
         else:
-            self.font = pg.font.SysFont('ubuntumono', cons.MENU_TEXT_SIZE, 1)
+            self.font = pg.font.SysFont("ubuntumono", cons.MENU_TEXT_SIZE, 1)
             self.color = pg.color.Color(cons.MENU_TEXT_COLOR)
             self.line_color = pg.color.Color(cons.BACKGROUND_COLOR)
         self.textsurf = self.font.render(self.text, True, self.color)
@@ -32,11 +32,14 @@ class MenuItem():
         screen.blit(self.textsurf, pos)
         x, y = pos
         linestart = x - cons.MENU_LINE_PAD, y + cons.MENU_TEXT_SIZE + cons.MENU_LINE_PAD
-        lineend = x + cons.MENU_LINE_LENGTH, y + cons.MENU_TEXT_SIZE + cons.MENU_LINE_PAD
+        lineend = (
+            x + cons.MENU_LINE_LENGTH,
+            y + cons.MENU_TEXT_SIZE + cons.MENU_LINE_PAD,
+        )
         pg.draw.line(screen, self.line_color, linestart, lineend, 2)
 
 
-class MainMenu():
+class MainMenu:
     def __init__(self, screen, switch_state_func):
         self.screen = screen
         self.switch_state = switch_state_func
@@ -92,7 +95,13 @@ class MainMenu():
         self.screen.fill(pg.color.Color(cons.BACKGROUND_COLOR))
         for letter in self.headline:
             letter.draw(self.screen)
-            pg.draw.line(self.screen, pg.color.Color(cons.MENU_TEXT_COLOR), (200, 250), (cons.WINDOW_WIDTH - 200, 250), 3)
+            pg.draw.line(
+                self.screen,
+                pg.color.Color(cons.MENU_TEXT_COLOR),
+                (200, 250),
+                (cons.WINDOW_WIDTH - 200, 250),
+                3,
+            )
         menu_start_x = 300
         menu_start_y = 300
         for idx, menu_item in enumerate(self.items, 1):
@@ -100,11 +109,11 @@ class MainMenu():
             menu_item.draw(self.screen, item_pos)
 
 
-class Application():
+class Application:
     def __init__(self):
         pg.init()
         pg.font.init()
-        self.screen = pg.display.set_mode(cons.SCREEN_SIZE)
+        self.screen = pg.display.set_mode(cons.SCREEN_SIZE, pg.FULLSCREEN)
         self.clock = pg.time.Clock()
         self.load_menu()
         self.load_games()
@@ -119,13 +128,13 @@ class Application():
         self.numbers_game = Numbers(self.screen, self.switch_state)
 
     def switch_state(self, state):
-        if state == 'MAINMENU':
+        if state == "MAINMENU":
             self.current_state = self.main_menu
-        elif state == 'LETTERS':
+        elif state == "LETTERS":
             self.current_state = self.letters_game
-        elif state == 'NUMBERS':
+        elif state == "NUMBERS":
             self.current_state = self.numbers_game
-        elif state == 'QUIT':
+        elif state == "QUIT":
             self.done = True
 
     def exit_app(self):
