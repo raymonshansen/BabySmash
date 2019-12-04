@@ -14,6 +14,7 @@ class Image:
         self.orig_image = pg.image.load(os.path.join("images", filename))
         self.image = self._rotate(rotation)
         self.image = self._scale((size, size))
+        self.rect = pg.Rect(pos, (size, size))
 
     def _rotate(self, angle):
         return pg.transform.rotate(self.orig_image, angle)
@@ -22,7 +23,7 @@ class Image:
         return pg.transform.scale(self.image, size)
 
     def get_rect(self):
-        return self.image.get_rect()
+        return self.rect
 
     def draw(self, screen):
         screen.blit(self.image, self.pos)
@@ -61,20 +62,22 @@ class Numbers:
                 rotate = randint(0, 360)
                 size = int(640 * uniform(0.5, 1.0))
                 pos = rand_screen_pos(cons.WINDOW_WIDTH, cons.WINDOW_HEIGHT, size, size)
-                test_rect = pg.rect.Rect(pos, (size, size))
-                print(test_rect)
+                test_rect = pg.Rect(pos, (size, size))
                 index = test_rect.collidelist(
                     [thing.get_rect() for thing in self.image_buffer]
                 )
-                if index < 0:
+                if index == -1:
                     lady = Image(rotate, pos, size, "ladybug.png")
                     self.image_buffer.append(lady)
                     break
+                else:
+                    print("overlap")
         self.image_buffer.remove(self.number_char)
 
     def draw_images(self):
         for img in self.image_buffer:
             img.draw(self.screen)
+            pg.draw.rect(self.screen, (200, 200, 200), img.get_rect(), 1)
 
     def draw(self):
         self.screen.fill(pg.color.Color(cons.BACKGROUND_COLOR))
