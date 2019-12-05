@@ -60,7 +60,7 @@ class Numbers:
             while True:
                 # TODO: This loop might never terminate!
                 rotate = randint(0, 360)
-                size = int(640 * uniform(0.5, 1.0))
+                size = int(640 * uniform(0.1, 0.8))
                 pos = rand_screen_pos(cons.WINDOW_WIDTH, cons.WINDOW_HEIGHT, size, size)
                 test_rect = pg.Rect(pos, (size, size))
                 index = test_rect.collidelist(
@@ -69,9 +69,7 @@ class Numbers:
                 if index == -1:
                     lady = Image(rotate, pos, size, "ladybug.png")
                     self.image_buffer.append(lady)
-                    break
-                else:
-                    print("overlap")
+                    break  
         self.image_buffer.remove(self.number_char)
 
     def draw_images(self):

@@ -113,7 +113,7 @@ class Application:
     def __init__(self):
         pg.init()
         pg.font.init()
-        self.screen = pg.display.set_mode(cons.SCREEN_SIZE, pg.FULLSCREEN)
+        self.screen = pg.display.set_mode(cons.SCREEN_SIZE)
         self.clock = pg.time.Clock()
         self.load_menu()
         self.load_games()
