@@ -75,7 +75,6 @@ class Numbers:
     def draw_images(self):
         for img in self.image_buffer:
             img.draw(self.screen)
-            pg.draw.rect(self.screen, (200, 200, 200), img.get_rect(), 1)
 
     def draw(self):
         self.screen.fill(pg.color.Color(cons.BACKGROUND_COLOR))
