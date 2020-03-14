@@ -1,7 +1,7 @@
 import pygame as pg
 from pygame.locals import KEYDOWN
 import os
-from random import randint, uniform
+from random import randint, uniform, choice
 import constants as cons
 from character import Character
 from utils import rand_screen_pos
@@ -67,9 +67,14 @@ class Numbers:
                     [thing.get_rect() for thing in self.image_buffer]
                 )
                 if index == -1:
-                    lady = Image(rotate, pos, size, "ladybug.png")
+                    lady = Image(
+                        rotate,
+                        pos,
+                        size,
+                        choice(["ladybug.png", "butterfly.png", "snail.png"]),
+                    )
                     self.image_buffer.append(lady)
-                    break  
+                    break
         self.image_buffer.remove(self.number_char)
 
     def draw_images(self):
