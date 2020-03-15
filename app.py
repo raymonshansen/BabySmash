@@ -115,25 +115,16 @@ class Application:
         pg.font.init()
         self.screen = pg.display.set_mode(cons.SCREEN_SIZE)
         self.clock = pg.time.Clock()
-        self.load_menu()
-        self.load_games()
         self.done = False
-
-    def load_menu(self):
-        self.main_menu = MainMenu(self.screen, self.switch_state)
-        self.current_state = self.main_menu
-
-    def load_games(self):
-        self.letters_game = Letters(self.screen, self.switch_state)
-        self.numbers_game = Numbers(self.screen, self.switch_state)
+        self.switch_state("MAINMENU")
 
     def switch_state(self, state):
         if state == "MAINMENU":
-            self.current_state = self.main_menu
+            self.current_state = MainMenu(self.screen, self.switch_state)
         elif state == "LETTERS":
-            self.current_state = self.letters_game
+            self.current_state = Letters(self.screen, self.switch_state)
         elif state == "NUMBERS":
-            self.current_state = self.numbers_game
+            self.current_state = Numbers(self.screen, self.switch_state)
         elif state == "QUIT":
             self.done = True
 
