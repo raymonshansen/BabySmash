@@ -88,5 +88,5 @@ class Letters():
         self.char_buffer.pop(0)
 
     def check_quit(self):
-        if self.buffer_to_string()[-4:] == 'QUIT':
+        if 'QUIT' in self.buffer_to_string():
             self.switch_state('MAINMENU')
