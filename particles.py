@@ -37,6 +37,12 @@ class Particle():
         pg.draw.rect(screen, self.color, self.rect)
 
 
+class NullGenerator:
+    def update(self, *args):
+        pass
+    def draw(self):
+        pass
+
 class ParticleGenerator():
     def __init__(self, x, y, rate, screen, color):
         self.pos = pg.Vector2(x, y)
@@ -44,7 +50,6 @@ class ParticleGenerator():
         self.rate = rate
         self.ticker = 0
         self.screen = screen
-        self.active = False
         self.color = color
 
     @property
@@ -62,27 +67,17 @@ class ParticleGenerator():
         ttl = randint(60, 180)
         return Particle(x, y, size, self.color, speed, ttl)
 
-    def reposition(self, new_x, new_y):
+    def update(self, new_x, new_y):
         self.pos = pg.Vector2(new_x, new_y)
-
-    def set_color(self, color):
-        self.color = color
-
-    def clear(self):
-        self.particles.clear()
-
-    def update(self):
-        if self.active:
-            self.ticker += 1
-            if self.time_to_spawn:
-                self.particles.append(self.generate_particle())
-            for particle in self.particles:
-                if particle.dead:
-                    self.particles.remove(particle)
-                else:
-                    particle.update()
+        self.ticker += 1
+        if self.time_to_spawn:
+            self.particles.append(self.generate_particle())
+        for particle in self.particles:
+            if particle.dead:
+                self.particles.remove(particle)
+            else:
+                particle.update()
 
     def draw(self):
-        if self.active:
-            for particle in self.particles:
-                particle.draw(self.screen)
+        for particle in self.particles:
+            particle.draw(self.screen)

@@ -5,7 +5,7 @@ from random import randint
 
 import constants as cons
 from utils import rand_color, rand_screen_pos
-from particles import ParticleGenerator
+from particles import ParticleGenerator, NullGenerator
 from character import Character
 
 
@@ -32,10 +32,10 @@ class Letters():
         self.screen = screen
         self.clock = pg.time.Clock()
         self.running = True
-        self.char_buffer = [Character(' ', (0, 0), 3)] * 5
+        self.char_buffer = [Character(' ', pos=(0, 0), size=3)] * 5
 
         # Is this a separate game?? :)
-        self.part_gen = ParticleGenerator(0, 0, 1, self.screen, rand_color())
+        self.part_gen = NullGenerator()
 
     def non_overlapping_character(self, char):
         """Return a character_object that does not overlap
@@ -46,7 +46,7 @@ class Letters():
             # Get a random position within the confines of the screen
             pos = rand_screen_pos(cons.WINDOW_WIDTH, cons.WINDOW_HEIGHT, size, size)
             new_char_object = Character(char, pos, size)
-            # Chekc for overlapp
+            # Check for overlapp
             index = new_char_object.get_rect().collidelist(self.buffer_to_rects())
             if index == -1:
                 break
@@ -54,7 +54,6 @@ class Letters():
 
     def update(self):
         x, y = pg.mouse.get_pos()
-        self.part_gen.reposition(x, y)
         for event in pg.event.get():
             if event.type == KEYDOWN:
                 char = get_character(event.key)
@@ -62,12 +61,10 @@ class Letters():
                 self.update_char_buffer(new_char)
                 self.char_buffer[0].fade_out()
             if event.type == MOUSEBUTTONDOWN:
-                self.part_gen.active = True
-                self.part_gen.set_color(rand_color())
+                self.part_gen = ParticleGenerator(x, y, 1, self.screen, rand_color())
             if event.type == MOUSEBUTTONUP:
-                self.part_gen.active = False
-                self.part_gen.clear()
-        self.part_gen.update()
+                self.part_gen = NullGenerator()
+        self.part_gen.update(x, y)
         self.check_quit()
 
     def draw(self):
@@ -78,7 +75,7 @@ class Letters():
         pg.display.update()
 
     def buffer_to_string(self):
-        return ''.join(str(char) for char in self.char_buffer)
+        return ''.join(str(c) for c in self.char_buffer)
 
     def buffer_to_rects(self):
         return [char.get_rect() for char in self.char_buffer]
