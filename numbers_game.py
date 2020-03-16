@@ -71,11 +71,8 @@ class Numbers:
                     break
         self.image_buffer.remove(self.number_char)
 
-    def draw_images(self):
-        for img in self.image_buffer:
-            img.draw(self.screen)
-
     def draw(self):
         self.screen.fill(pg.color.Color(cons.BACKGROUND_COLOR))
         self.number_char.draw(self.screen)
-        self.draw_images()
+        for img in self.image_buffer:
+            img.draw(self.screen)
