@@ -3,7 +3,7 @@ from utils import rand_color
 
 
 class Character():
-    def __init__(self, char=" ", pos, size):
+    def __init__(self, char=" ", pos=(0, 0), size=3):
         self.char = char
         self.font = pg.font.SysFont('ubuntumono', size, 1)
         self.origsurf = self.font.render(self.char, True, rand_color())

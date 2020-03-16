@@ -9,6 +9,8 @@ from particles import ParticleGenerator, NullGenerator
 from character import Character
 
 
+
+
 class Letters():
     def __init__(self, screen, switch_state_func):
         pg.init()
@@ -17,7 +19,7 @@ class Letters():
         self.screen = screen
         self.clock = pg.time.Clock()
         self.running = True
-        self.char_buffer = [Character(' ', pos=(0, 0), size=3)] * 5
+        self.char_buffer = [Character()] * 5
 
         # Is this a separate game?? :)
         self.part_gen = NullGenerator()
