@@ -26,7 +26,7 @@ MENU_TEXT_SIZE = 110
 MENU_SELECTED_TEXT_SIZE = 130
 
 
-ALPHABET = 'abcdefghijklmnopqrstuvwxyzæøå'
+ALPHABET = 'abcdefghijklmnopqrstuvwxyzæøå'.upper()
 BACKGROUND_COLOR = 'gray98'
 PARTICLE_MIN = 30
 PARTICLE_MAX = 70

@@ -9,21 +9,6 @@ from particles import ParticleGenerator, NullGenerator
 from character import Character
 
 
-def get_character(event_key):
-    character = pg.key.name(event_key)
-    # Æ, Ø and Å have weird key-names.
-    if character == 'world 70':
-        character = 'æ'
-    if character == 'world 88':
-        character = 'ø'
-    if character == 'world 69':
-        character = 'å'
-    if character in cons.ALPHABET:
-        return character.upper()
-    else:
-        return ' '
-
-
 class Letters():
     def __init__(self, screen, switch_state_func):
         pg.init()
@@ -56,7 +41,9 @@ class Letters():
         x, y = pg.mouse.get_pos()
         for event in pg.event.get():
             if event.type == KEYDOWN:
-                char = get_character(event.key)
+                char = event.unicode.upper()
+                if char not in cons.ALPHABET:
+                    continue
                 new_char = self.non_overlapping_character(char)
                 self.update_char_buffer(new_char)
                 self.char_buffer[0].fade_out()
