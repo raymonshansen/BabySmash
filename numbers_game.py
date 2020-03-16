@@ -8,19 +8,13 @@ from utils import rand_screen_pos
 
 
 class Image:
-    def __init__(self, rotation, pos, size, filename):
+    def __init__(self, pos, size, angle, filename):
         self.pos = pos
-        self.size = size
-        self.orig_image = pg.image.load(os.path.join("images", filename))
-        self.image = self._rotate(rotation)
-        self.image = self._scale((size, size))
-        self.rect = pg.Rect(pos, (size, size))
+        orig_image = pg.image.load(filename)
+        rotated = pg.transform.rotate(orig_image, angle)
+        self.image = pg.transform.scale(rotated, (size, size))
+        self.rect = self.image.get_rect().move(pos)
 
-    def _rotate(self, angle):
-        return pg.transform.rotate(self.orig_image, angle)
-
-    def _scale(self, size):
-        return pg.transform.scale(self.image, size)
 
     def get_rect(self):
         return self.rect
@@ -37,7 +31,7 @@ class Numbers:
         self.screen = screen
         self.clock = pg.time.Clock()
         self.running = True
-        self.number_char = Character(" ", (0, 0), 3)
+        self.number_char = Character()
         self.number_of_images = 0
         self.image_buffer = list()
 
@@ -68,10 +62,10 @@ class Numbers:
                 )
                 if index == -1:
                     lady = Image(
-                        rotate,
                         pos,
                         size,
-                        choice(["ladybug.png", "butterfly.png", "snail.png"]),
+                        rotate,
+                        os.path.join("images", choice(["ladybug.png", "butterfly.png", "snail.png"])),
                     )
                     self.image_buffer.append(lady)
                     break
