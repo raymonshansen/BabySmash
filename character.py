@@ -3,7 +3,7 @@ from utils import rand_color
 
 
 class Character():
-    def __init__(self, char, pos, size):
+    def __init__(self, char=" ", pos, size):
         self.char = char
         self.font = pg.font.SysFont('ubuntumono', size, 1)
         self.origsurf = self.font.render(self.char, True, rand_color())
@@ -20,8 +20,6 @@ class Character():
         return self.char
 
     def draw(self, screen):
-        if self.char == ' ':
-            return
         if self.fading:
             self.textsurf = self.origsurf.copy()
             self.alphasurf.fill((255, 255, 255, self.alpha))
