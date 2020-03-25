@@ -1,6 +1,7 @@
 import pygame as pg
 from random import randint
 import sys
+import configparser
 import constants as cons
 from letters_game import Letters
 from numbers_game import Numbers
@@ -67,7 +68,7 @@ class MainMenu:
 
     def generate_headline(self):
         header_buffer = list()
-        header_text = cons.APP_NAME
+        header_text = "BabySmash"
         total_length = cons.WINDOW_WIDTH - 600
         space_per_letter = total_length // len(header_text)
         start_x = 300
@@ -75,7 +76,7 @@ class MainMenu:
             pos = (start_x, 50)
             size = randint(100, 200)
             start_x += space_per_letter
-            header_buffer.append(Character(letter, pos, size))
+            header_buffer.append(Character(letter, size, pos))
         return header_buffer
 
     def handle_events(self):
@@ -109,24 +110,65 @@ class MainMenu:
             menu_item.draw(self.screen, item_pos)
 
 
+class Config:
+    def __init__(self, config_file_name):
+        self.config = configparser.ConfigParser()
+        self.config.read(config_file_name)
+
+    def get_global_config(self):
+        from_file = self.config["GLOBAL"]
+        global_config = dict()
+        global_config["screen_w"] = int(from_file["screen_w"])
+        global_config["screen_h"] = int(from_file["screen_h"])
+        global_config["fps"] = int(from_file["fps"])
+        return global_config
+
+    def get_game_config(self, game_class):
+        config_definition = game_class.config_params()
+        from_file = self.config[game_class.game_name]
+        fixed_config = dict()
+        for k, v in config_definition.items():
+            converter = v["type"]
+            stored_string_value = from_file[k]
+            try:
+                converted = converter(stored_string_value)
+                if v["validator"](converted):
+                    fixed_config[k] = converted
+            except ValueError:
+                # TODO: Notify user likely set incompatible config values!
+                fixed_config[k] = v["default"]
+        return fixed_config
+
+
 class Application:
     def __init__(self):
         pg.init()
         pg.font.init()
-        self.screen = pg.display.set_mode(cons.SCREEN_SIZE)
+        self.config = Config("baby_config.ini")
+        w = self.config.get_global_config()["screen_w"]
+        h = self.config.get_global_config()["screen_h"]
+        self.screen = pg.display.set_mode((w, h))
         self.clock = pg.time.Clock()
         self.done = False
-        self.switch_state("MAINMENU")
+        self.switch_state()
 
-    def switch_state(self, state):
-        if state == "MAINMENU":
-            self.current_state = MainMenu(self.screen, self.switch_state)
-        elif state == "LETTERS":
-            self.current_state = Letters(self.screen, self.switch_state)
+    def switch_state(self, state=None):
+        if state == "LETTERS":
+            fixed_config = self.config.get_game_config(Letters)
+            global_config = self.config.get_global_config()
+            self.current_state = Letters(
+                self.screen, lambda: self.switch_state(), fixed_config, global_config
+            )
         elif state == "NUMBERS":
-            self.current_state = Numbers(self.screen, self.switch_state)
+            fixed_config = self.config.get_game_config(Numbers)
+            global_config = self.config.get_global_config()
+            self.current_state = Numbers(
+                self.screen, lambda: self.switch_state(), fixed_config, global_config
+            )
         elif state == "QUIT":
             self.done = True
+        else:
+            self.current_state = MainMenu(self.screen, self.switch_state)
 
     def exit_app(self):
         pg.quit()
@@ -137,7 +179,7 @@ class Application:
             self.current_state.update()
             self.current_state.draw()
             pg.display.update()
-            self.clock.tick(cons.FPS)
+            self.clock.tick(self.config.get_global_config()["fps"])
         self.exit_app()
 
 

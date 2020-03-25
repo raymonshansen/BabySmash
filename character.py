@@ -2,10 +2,10 @@ import pygame as pg
 from utils import rand_color
 
 
-class Character():
-    def __init__(self, char=" ", pos=(0, 0), size=3):
-        self.char = char
-        self.font = pg.font.SysFont('ubuntumono', size, 1)
+class Character:
+    def __init__(self, char=" ", size=3, pos=(0, 0)):
+        self.char = char[0]
+        self.font = pg.font.SysFont("ubuntumono", size, 1)
         self.origsurf = self.font.render(self.char, True, rand_color())
         self.textsurf = self.origsurf.copy()
         self.alphasurf = pg.Surface(self.textsurf.get_size(), pg.SRCALPHA)

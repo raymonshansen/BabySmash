@@ -1,25 +1,47 @@
 import pygame as pg
 from pygame.locals import KEYDOWN, MOUSEBUTTONDOWN, MOUSEBUTTONUP
-import sys
 from random import randint
 
-import constants as cons
 from utils import rand_color, rand_screen_pos
 from particles import ParticleGenerator, NullGenerator
 from character import Character
 
+QUIT_WORD = "QUIT"
 
 
+class Letters:
+    game_name = "LETTERS"
 
-class Letters():
-    def __init__(self, screen, switch_state_func):
+    @classmethod
+    def config_params(cls):
+        return {
+            "buffersize": {
+                "type": int,
+                "validator": lambda num: len(QUIT_WORD) <= num <= 16,
+                "default": 5,
+            },
+            "min_letter_size": {
+                "type": int,
+                "validator": lambda num: 16 <= num <= 256,
+                "default": 64,
+            },
+            "max_letter_size": {
+                "type": int,
+                "validator": lambda num: 512 <= num <= 1024,
+                "default": 800,
+            },
+        }
+
+    def __init__(self, screen, quit_func, config, g_config):
         pg.init()
         pg.font.init()
-        self.switch_state = switch_state_func
         self.screen = screen
+        self.quit = quit_func
+        self.config = config
+        self.g_config = g_config
         self.clock = pg.time.Clock()
         self.running = True
-        self.char_buffer = [Character()] * 5
+        self.char_buffer = [Character()] * config["buffersize"]
 
         # Is this a separate game?? :)
         self.part_gen = NullGenerator()
@@ -29,11 +51,12 @@ class Letters():
         with any of the ones currently in the buffer."""
         while True:
             # TODO: This loop might never terminate!
-            size = randint(cons.MIN_LETTER_SIZE, cons.MAX_LETTER_SIZE)
-            # Get a random position within the confines of the screen
-            pos = rand_screen_pos(cons.WINDOW_WIDTH, cons.WINDOW_HEIGHT, size, size)
-            new_char_object = Character(char, pos, size)
-            # Check for overlapp
+            size = randint(
+                self.config["min_letter_size"], self.config["max_letter_size"]
+            )
+            w, h = self.screen.get_size()
+            pos = rand_screen_pos(w, h, size, size)
+            new_char_object = Character(char, size, pos)
             index = new_char_object.get_rect().collidelist(self.buffer_to_rects())
             if index == -1:
                 break
@@ -44,7 +67,7 @@ class Letters():
         for event in pg.event.get():
             if event.type == KEYDOWN:
                 char = event.unicode.upper()
-                if char not in cons.ALPHABET:
+                if char == "" or char not in "ABCDEFGHIJKLMNOPQRSTUVWXYZÆØÅ":
                     continue
                 new_char = self.non_overlapping_character(char)
                 self.update_char_buffer(new_char)
@@ -57,14 +80,14 @@ class Letters():
         self.check_quit()
 
     def draw(self):
-        self.screen.fill(pg.color.Color(cons.BACKGROUND_COLOR))
+        self.screen.fill(pg.color.Color("gray98"))
         for letter in self.char_buffer:
             letter.draw(self.screen)
         self.part_gen.draw()
         pg.display.update()
 
     def buffer_to_string(self):
-        return ''.join(str(c) for c in self.char_buffer)
+        return "".join(str(c) for c in self.char_buffer)
 
     def buffer_to_rects(self):
         return [char.get_rect() for char in self.char_buffer]
@@ -74,5 +97,5 @@ class Letters():
         self.char_buffer.pop(0)
 
     def check_quit(self):
-        if 'QUIT' in self.buffer_to_string():
-            self.switch_state('MAINMENU')
+        if QUIT_WORD in self.buffer_to_string():
+            self.quit()
