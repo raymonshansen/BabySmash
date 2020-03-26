@@ -114,14 +114,10 @@ class Config:
     def __init__(self, config_file_name):
         self.config = configparser.ConfigParser()
         self.config.read(config_file_name)
+        self.global_config = self._get_global_config()
 
-    def get_global_config(self):
-        from_file = self.config["GLOBAL"]
-        global_config = dict()
-        global_config["screen_w"] = int(from_file["screen_w"])
-        global_config["screen_h"] = int(from_file["screen_h"])
-        global_config["fps"] = int(from_file["fps"])
-        return global_config
+    def _get_global_config(self):
+        return dict([("screen_w", 1920), ("screen_h", 1080), ("fps", 30)])
 
     def get_game_config(self, game_class):
         config_definition = game_class.config_params()
@@ -145,8 +141,8 @@ class Application:
         pg.init()
         pg.font.init()
         self.config = Config("baby_config.ini")
-        w = self.config.get_global_config()["screen_w"]
-        h = self.config.get_global_config()["screen_h"]
+        w = self.config.global_config["screen_w"]
+        h = self.config.global_config["screen_h"]
         self.screen = pg.display.set_mode((w, h))
         self.clock = pg.time.Clock()
         self.done = False
@@ -155,15 +151,13 @@ class Application:
     def switch_state(self, state=None):
         if state == "LETTERS":
             fixed_config = self.config.get_game_config(Letters)
-            global_config = self.config.get_global_config()
             self.current_state = Letters(
-                self.screen, lambda: self.switch_state(), fixed_config, global_config
+                self.screen, lambda: self.switch_state(), fixed_config
             )
         elif state == "NUMBERS":
             fixed_config = self.config.get_game_config(Numbers)
-            global_config = self.config.get_global_config()
             self.current_state = Numbers(
-                self.screen, lambda: self.switch_state(), fixed_config, global_config
+                self.screen, lambda: self.switch_state(), fixed_config
             )
         elif state == "QUIT":
             self.done = True
@@ -179,7 +173,7 @@ class Application:
             self.current_state.update()
             self.current_state.draw()
             pg.display.update()
-            self.clock.tick(self.config.get_global_config()["fps"])
+            self.clock.tick(self.config.global_config["fps"])
         self.exit_app()
 
 

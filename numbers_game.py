@@ -44,11 +44,10 @@ class Numbers:
             },
         }
 
-    def __init__(self, screen, quit_func, config, g_config):
+    def __init__(self, screen, quit_func, config):
         pg.init()
         pg.font.init()
         self.config = config
-        self.global_config = g_config
         self.quit = quit_func
         self.screen = screen
         self.clock = pg.time.Clock()

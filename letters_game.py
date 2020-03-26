@@ -32,13 +32,12 @@ class Letters:
             },
         }
 
-    def __init__(self, screen, quit_func, config, g_config):
+    def __init__(self, screen, quit_func, config):
         pg.init()
         pg.font.init()
         self.screen = screen
         self.quit = quit_func
         self.config = config
-        self.g_config = g_config
         self.clock = pg.time.Clock()
         self.running = True
         self.char_buffer = [Character()] * config["buffersize"]
