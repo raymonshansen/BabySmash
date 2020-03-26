@@ -54,7 +54,6 @@ class Numbers:
         self.clock = pg.time.Clock()
         self.running = True
         self.number_char = Character()
-        self.number_of_images = 0
         self.image_buffer = list()
 
     @property
@@ -75,15 +74,14 @@ class Numbers:
                 if key_str in [str(x) for x in range(10)]:
                     size = randint(*self.number_size)
                     self.number_char = Character(key_str, size, (100, 100))
-                    self.number_of_images = int(key_str)
-                    self.update_image_buffer()
+                    self.update_image_buffer(int(key_str))
                 if key_str == "q":
                     self.quit()
 
-    def update_image_buffer(self):
+    def update_image_buffer(self, num):
         self.image_buffer.clear()
         self.image_buffer = [self.number_char]
-        for _ in range(self.number_of_images):
+        for _ in range(num):
             while True:
                 # TODO: This loop might never terminate!
                 size = int(640 * uniform(0.1, 0.8))
