@@ -1,11 +1,50 @@
 import pygame as pg
-from random import randint
+from random import randint, choice
 import sys
 import configparser
 import constants as cons
 from letters_game import Letters
 from numbers_game import Numbers
 from character import Character
+from utils import rand_screen_pos
+
+
+class MainMenuBackground:
+    def __init__(self, screen):
+        self.characters = list()
+        self.screen = screen
+
+    def spawn_letter(self):
+        size = randint(100, 150)
+        w, h = self.screen.get_size()
+        pos = tuple(pg.Vector2(rand_screen_pos(w, h, size, size)))
+        alpha = randint(15, 20)
+        char = choice("ABCDEFGHIJKLMNOPQRSTUVWXYZÆØÅ")
+        new_letter = Character(char, size, pos)
+        new_letter.set_fade_speed(0)
+        new_letter.set_alpha(alpha)
+        direction = pg.Vector2(1, 1).rotate(float(randint(1, 360))).normalize()
+        direction *= randint(1, 2)
+        return new_letter, direction
+
+    def update(self):
+        for tup in self.characters:
+            letter, direction = tup
+            letterpos = pg.Vector2(letter.get_rect().topleft)
+            new_pos = letterpos + direction
+            letter.move(tuple(new_pos))
+            notonscreen = letter.get_rect().colliderect(self.screen.get_rect()) == 0
+            invisible = letter.alpha == 0
+            if notonscreen or invisible:
+                self.characters.remove(tup)
+
+        if len(self.characters) < 10:
+            self.characters.append(self.spawn_letter())
+
+    def draw(self):
+        for tup in self.characters:
+            letter, direction = tup
+            letter.draw(self.screen)
 
 
 class MenuItem:
@@ -42,6 +81,7 @@ class MenuItem:
 
 class MainMenu:
     def __init__(self, screen, switch_state_func):
+        self.bg = MainMenuBackground(screen)
         self.screen = screen
         self.switch_state = switch_state_func
         self.items = list()
@@ -91,9 +131,11 @@ class MainMenu:
 
     def update(self):
         self.handle_events()
+        self.bg.update()
 
     def draw(self):
         self.screen.fill(pg.color.Color(cons.BACKGROUND_COLOR))
+        self.bg.draw()
         for letter in self.headline:
             letter.draw(self.screen)
             pg.draw.line(
