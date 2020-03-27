@@ -1,6 +1,7 @@
 import pygame as pg
 from random import randint, choice
 import sys
+import os
 import configparser
 import constants as cons
 from letters_game import Letters
@@ -182,6 +183,7 @@ class Application:
     def __init__(self):
         pg.init()
         pg.font.init()
+        self.set_icon_and_window_title()
         self.config = Config("baby_config.ini")
         w = self.config.global_config["screen_w"]
         h = self.config.global_config["screen_h"]
@@ -189,6 +191,11 @@ class Application:
         self.clock = pg.time.Clock()
         self.done = False
         self.switch_state()
+
+    def set_icon_and_window_title(self):
+        icon = pg.image.load(os.path.join("images", "BabySmashIcon.png"))
+        pg.display.set_icon(icon)
+        pg.display.set_caption("BabySmash")
 
     def switch_state(self, state=None):
         if state == "LETTERS":
