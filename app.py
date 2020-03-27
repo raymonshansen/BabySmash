@@ -18,7 +18,7 @@ class MainMenuBackground:
         size = randint(100, 150)
         w, h = self.screen.get_size()
         pos = tuple(pg.Vector2(rand_screen_pos(w, h, size, size)))
-        alpha = randint(15, 20)
+        alpha = randint(25, 40)
         char = choice("ABCDEFGHIJKLMNOPQRSTUVWXYZÆØÅ")
         new_letter = Character(char, size, pos)
         new_letter.set_fade_speed(0)
