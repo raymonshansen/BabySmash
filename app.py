@@ -117,9 +117,6 @@ class Config:
         self.config.read(config_file_name)
         self.global_config = self._get_global_config()
 
-    def _get_global_config(self):
-        return dict([("screen_w", 1920), ("screen_h", 1080), ("fps", 30)])
-
     def get_game_config(self, game_class):
         config_definition = game_class.config_params()
         from_file = self.config[game_class.game_name]
@@ -133,6 +130,7 @@ class Config:
                     fixed_config[k] = converted
             except ValueError:
                 # TODO: Notify user likely set incompatible config values!
+                print("Cannot use")
                 fixed_config[k] = v["default"]
         return fixed_config
 
@@ -143,11 +141,11 @@ class Application:
         pg.font.init()
         self.set_icon_and_window_title()
         self.config = Config("baby_config.ini")
-        w = self.config.global_config["screen_w"]
-        h = self.config.global_config["screen_h"]
-        self.screen = pg.display.set_mode((w, h))
+
+        self.screen = pg.display.set_mode((1920, 1080))
         self.clock = pg.time.Clock()
         self.done = False
+
         self.switch_state()
 
     def set_icon_and_window_title(self):
@@ -180,7 +178,7 @@ class Application:
             self.current_state.update()
             self.current_state.draw()
             pg.display.update()
-            self.clock.tick(self.config.global_config["fps"])
+            self.clock.tick(60)
         self.exit_app()
 
 
