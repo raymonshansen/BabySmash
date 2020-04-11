@@ -115,7 +115,6 @@ class Config:
     def __init__(self, config_file_name):
         self.config = configparser.ConfigParser()
         self.config.read(config_file_name)
-        self.global_config = self._get_global_config()
 
     def get_game_config(self, game_class):
         config_definition = game_class.config_params()
