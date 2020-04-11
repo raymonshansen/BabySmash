@@ -23,6 +23,7 @@ class Image:
 
 class Numbers:
     game_name = "NUMBERS"
+    main_menu_name = "Numbers"
 
     @classmethod
     def config_params(cls):

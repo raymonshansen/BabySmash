@@ -1,7 +1,6 @@
 WINDOW_WIDTH = 1920
 WINDOW_HEIGHT = 1080
 SCREEN_SIZE = WINDOW_WIDTH, WINDOW_HEIGHT
-FPS = 30
 THECOLORS = [
     "blue",
     "brown",
@@ -30,18 +29,3 @@ MENU_SELECTED_TEXT_SIZE = 130
 BACKGROUND_COLOR = "gray98"
 PARTICLE_MIN = 30
 PARTICLE_MAX = 70
-
-
-MENU_ITEM_TEXTS = [
-    (
-        "Letters",
-        "Hit a letter-key to display it on screen. Type 'quit' to return to main menu.",
-        "LETTERS",
-    ),
-    (
-        "Numbers",
-        "Hit a number-key to display it and a corresponding number of ladybugs.",
-        "NUMBERS",
-    ),
-    ("EXIT", "Exit the program.", "QUIT"),
-]

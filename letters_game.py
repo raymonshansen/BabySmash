@@ -11,6 +11,7 @@ QUIT_WORD = "QUIT"
 
 class Letters:
     game_name = "LETTERS"
+    main_menu_name = "Letters"
 
     @classmethod
     def config_params(cls):

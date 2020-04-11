@@ -9,15 +9,19 @@ from numbers_game import Numbers
 from character import Character
 
 
+class Exit:
+    game_name = "QUIT"
+    main_menu_name = "EXIT"
+
+
 class MenuItem:
-    def __init__(self, text, info, state):
-        self.text = text
+    def __init__(self, Item):
         self.color = pg.color.Color(cons.MENU_TEXT_COLOR)
         self.line_color = pg.color.Color(cons.BACKGROUND_COLOR)
         self.font = pg.font.SysFont("ubuntumono", cons.MENU_TEXT_SIZE, 1)
-        self.textsurf = self.font.render(text, True, self.color)
-        self.info = info
-        self.state = state
+        self.textsurf = self.font.render(Item.main_menu_name, True, self.color)
+        self.menu_text = Item.main_menu_name
+        self.state = Item.game_name
 
     def set_selected(self, selected):
         if selected:
@@ -28,7 +32,7 @@ class MenuItem:
             self.font = pg.font.SysFont("ubuntumono", cons.MENU_TEXT_SIZE, 1)
             self.color = pg.color.Color(cons.MENU_TEXT_COLOR)
             self.line_color = pg.color.Color(cons.BACKGROUND_COLOR)
-        self.textsurf = self.font.render(self.text, True, self.color)
+        self.textsurf = self.font.render(self.menu_text, True, self.color)
 
     def draw(self, screen, pos):
         screen.blit(self.textsurf, pos)
@@ -42,30 +46,30 @@ class MenuItem:
 
 
 class MainMenu:
-    def __init__(self, screen, switch_state_func):
+    def __init__(self, screen, switch_state_func, menu_items):
         self.screen = screen
         self.switch_state = switch_state_func
         self.items = list()
-        self.selected = 0
+        self.sel_idx = 0
         self.headline = self.generate_headline()
-        self.load_menu_items()
+        self.load_menu_items(menu_items)
 
-    def load_menu_items(self):
-        for menu_text, menu_info, state in cons.MENU_ITEM_TEXTS:
-            self.items.append(MenuItem(menu_text, menu_info, state))
-        self.items[self.selected].set_selected(True)
+    def load_menu_items(self, menu_items):
+        for item in menu_items:
+            self.items.append(MenuItem(item))
+        self.items[self.sel_idx].set_selected(True)
 
     def up(self):
-        self.items[self.selected].set_selected(False)
-        self.selected -= 1
-        self.selected %= len(self.items)
-        self.items[self.selected].set_selected(True)
+        self.items[self.sel_idx].set_selected(False)
+        self.sel_idx -= 1
+        self.sel_idx %= len(self.items)
+        self.items[self.sel_idx].set_selected(True)
 
     def down(self):
-        self.items[self.selected].set_selected(False)
-        self.selected += 1 % len(self.items)
-        self.selected %= len(self.items)
-        self.items[self.selected].set_selected(True)
+        self.items[self.sel_idx].set_selected(False)
+        self.sel_idx += 1
+        self.sel_idx %= len(self.items)
+        self.items[self.sel_idx].set_selected(True)
 
     def generate_headline(self):
         header_buffer = list()
@@ -87,7 +91,7 @@ class MainMenu:
             if event.type == pg.KEYDOWN and event.key == pg.K_UP:
                 self.up()
             if event.type == pg.KEYDOWN and event.key == pg.K_RETURN:
-                current_menu_item = self.items[self.selected]
+                current_menu_item = self.items[self.sel_idx]
                 self.switch_state(current_menu_item.state)
 
     def update(self):
@@ -166,7 +170,9 @@ class Application:
         elif state == "QUIT":
             self.done = True
         else:
-            self.current_state = MainMenu(self.screen, self.switch_state)
+            self.current_state = MainMenu(
+                self.screen, self.switch_state, [Letters, Numbers, Exit]
+            )
 
     def exit_app(self):
         pg.quit()
