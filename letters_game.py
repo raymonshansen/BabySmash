@@ -70,7 +70,7 @@ class Letters:
                     continue
                 new_char = self.non_overlapping_character(char)
                 self.update_char_buffer(new_char)
-                self.char_buffer[0].fade_out()
+                self.char_buffer[0].set_fade_speed(10)
             if event.type == MOUSEBUTTONDOWN:
                 self.part_gen = ParticleGenerator(x, y, 1, self.screen, rand_color())
             if event.type == MOUSEBUTTONUP:
@@ -93,7 +93,8 @@ class Letters:
 
     def update_char_buffer(self, new_char):
         self.char_buffer.append(new_char)
-        self.char_buffer.pop(0)
+        if self.char_buffer[0].alpha == 0:
+            self.char_buffer.pop(0)
 
     def check_quit(self):
         if QUIT_WORD in self.buffer_to_string():

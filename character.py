@@ -45,6 +45,3 @@ class Character:
         self.textsurf.blit(self.alphasurf, (0, 0), special_flags=pg.BLEND_RGBA_MULT)
         self.alpha = max(self.alpha - self.fade_speed, 0)
         screen.blit(self.textsurf, self.pos)
-
-    def fade_out(self):
-        self.fading = True
