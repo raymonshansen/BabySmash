@@ -3,10 +3,10 @@ from utils import rand_color
 
 
 class Character:
-    def __init__(self, char=" ", size=3, pos=(0, 0)):
+    def __init__(self, char=" ", size=3, pos=(0, 0), color=None):
         self.char = char[0]
         self.font = pg.font.SysFont("ubuntumono", size, bold=1)
-        self.color = rand_color()
+        self.color = color or rand_color()
         self.origsurf = self.font.render(self.char, True, self.color)
         self.textsurf = self.origsurf.copy()
         self.alphasurf = pg.Surface(self.textsurf.get_size(), pg.SRCALPHA)

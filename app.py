@@ -1,5 +1,4 @@
 import pygame as pg
-from random import randint
 import sys
 import os
 import configparser
@@ -14,35 +13,60 @@ class Exit:
     main_menu_name = "EXIT"
 
 
+class MainMenuHeadline:
+    def __init__(self, text="[insert header]"):
+        self.rect = pg.Rect(300, 50, (100 * len(text)), 212)
+        self.header_buffer = self.generate_headline(text)
+
+    def generate_headline(self, text):
+        header_buffer = list()
+        start_x = self.rect.left
+        for letter in text:
+            pos = (start_x, self.rect.top)
+            size = 212
+            start_x += 95
+            color = pg.color.Color("#365E53")
+            header_buffer.append(Character(letter, size, pos, color))
+        return header_buffer
+
+    def draw(self, screen):
+        for char in self.header_buffer:
+            char.draw(screen)
+
+
 class MenuItem:
     def __init__(self, Item):
-        self.color = pg.color.Color(cons.MENU_TEXT_COLOR)
-        self.line_color = pg.color.Color(cons.BACKGROUND_COLOR)
-        self.font = pg.font.SysFont("ubuntumono", cons.MENU_TEXT_SIZE, 1)
-        self.textsurf = self.font.render(Item.main_menu_name, True, self.color)
+        self.unsel_text_col = pg.color.Color(215, 220, 215)
+        self.sel_text_col = pg.color.Color(255, 250, 255)
+        self.selected_col = pg.color.Color(46, 107, 50)
+        self.unselected_col = pg.color.Color("#365E53")
+        self.font = pg.font.SysFont("ubuntumono", 120, 1)
+        self.textsurf = self.font.render(Item.main_menu_name, True, self.unsel_text_col)
         self.menu_text = Item.main_menu_name
         self.state = Item.game_name
+        self.selected = False
 
-    def set_selected(self, selected):
-        if selected:
-            self.font = pg.font.SysFont("ubuntumono", cons.MENU_SELECTED_TEXT_SIZE, 1)
-            self.color = pg.color.Color(cons.MENU_SELECTED_COLOR)
-            self.line_color = self.color
-        else:
-            self.font = pg.font.SysFont("ubuntumono", cons.MENU_TEXT_SIZE, 1)
-            self.color = pg.color.Color(cons.MENU_TEXT_COLOR)
-            self.line_color = pg.color.Color(cons.BACKGROUND_COLOR)
-        self.textsurf = self.font.render(self.menu_text, True, self.color)
+    def flip_state(self):
+        self.selected = not self.selected
 
     def draw(self, screen, pos):
-        screen.blit(self.textsurf, pos)
         x, y = pos
-        linestart = x - cons.MENU_LINE_PAD, y + cons.MENU_TEXT_SIZE + cons.MENU_LINE_PAD
-        lineend = (
-            x + cons.MENU_LINE_LENGTH,
-            y + cons.MENU_TEXT_SIZE + cons.MENU_LINE_PAD,
-        )
-        pg.draw.line(screen, self.line_color, linestart, lineend, 2)
+        DI = 10
+        HI = 130
+        SEL_LEN = 800
+        UNSEL_LEN = 600
+        if self.selected:
+            self.textsurf = self.font.render(self.menu_text, True, self.sel_text_col)
+            pg.draw.rect(screen, self.selected_col, (x - DI, y, SEL_LEN, HI), 3)
+            pg.draw.rect(
+                screen, self.selected_col, (x, y + DI, SEL_LEN - DI - DI, HI - DI - DI)
+            )
+            pos = (x + DI + DI, y)
+        if not self.selected:
+            self.textsurf = self.font.render(self.menu_text, True, self.unsel_text_col)
+            pg.draw.rect(screen, self.unselected_col, (x - DI, y, UNSEL_LEN, HI))
+            pos = (x + DI, y)
+        screen.blit(self.textsurf, pos)
 
 
 class MainMenu:
@@ -51,38 +75,25 @@ class MainMenu:
         self.switch_state = switch_state_func
         self.items = list()
         self.sel_idx = 0
-        self.headline = self.generate_headline()
+        self.headline = MainMenuHeadline("Baby Smash!")
         self.load_menu_items(menu_items)
 
     def load_menu_items(self, menu_items):
         for item in menu_items:
             self.items.append(MenuItem(item))
-        self.items[self.sel_idx].set_selected(True)
+        self.items[self.sel_idx].flip_state()
 
     def up(self):
-        self.items[self.sel_idx].set_selected(False)
+        self.items[self.sel_idx].flip_state()
         self.sel_idx -= 1
         self.sel_idx %= len(self.items)
-        self.items[self.sel_idx].set_selected(True)
+        self.items[self.sel_idx].flip_state()
 
     def down(self):
-        self.items[self.sel_idx].set_selected(False)
+        self.items[self.sel_idx].flip_state()
         self.sel_idx += 1
         self.sel_idx %= len(self.items)
-        self.items[self.sel_idx].set_selected(True)
-
-    def generate_headline(self):
-        header_buffer = list()
-        header_text = "BabySmash"
-        total_length = cons.WINDOW_WIDTH - 600
-        space_per_letter = total_length // len(header_text)
-        start_x = 300
-        for letter in header_text:
-            pos = (start_x, 50)
-            size = randint(100, 200)
-            start_x += space_per_letter
-            header_buffer.append(Character(letter, size, pos))
-        return header_buffer
+        self.items[self.sel_idx].flip_state()
 
     def handle_events(self):
         for event in pg.event.get():
@@ -99,15 +110,7 @@ class MainMenu:
 
     def draw(self):
         self.screen.fill(pg.color.Color(cons.BACKGROUND_COLOR))
-        for letter in self.headline:
-            letter.draw(self.screen)
-            pg.draw.line(
-                self.screen,
-                pg.color.Color(cons.MENU_TEXT_COLOR),
-                (200, 250),
-                (cons.WINDOW_WIDTH - 200, 250),
-                3,
-            )
+        self.headline.draw(self.screen)
         menu_start_x = 300
         menu_start_y = 300
         for idx, menu_item in enumerate(self.items, 1):
