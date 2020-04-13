@@ -38,7 +38,7 @@ class MenuItem:
     def __init__(self, Item):
         self.unsel_text_col = pg.color.Color(215, 220, 215)
         self.sel_text_col = pg.color.Color(255, 250, 255)
-        self.selected_col = pg.color.Color(46, 107, 50)
+        self.selected_col = pg.color.Color(99, 170, 130)
         self.unselected_col = pg.color.Color("#365E53")
         self.font = pg.font.SysFont("ubuntumono", 120, 1)
         self.textsurf = self.font.render(Item.main_menu_name, True, self.unsel_text_col)
@@ -97,6 +97,8 @@ class MainMenu:
 
     def handle_events(self):
         for event in pg.event.get():
+            if event.type == pg.KEYDOWN and event.key == pg.K_RIGHT:
+                print(f"{self.items[self.sel_idx].menu_text} Config")
             if event.type == pg.KEYDOWN and event.key == pg.K_DOWN:
                 self.down()
             if event.type == pg.KEYDOWN and event.key == pg.K_UP:
