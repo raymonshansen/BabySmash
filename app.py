@@ -2,7 +2,6 @@ import pygame as pg
 import sys
 import os
 import configparser
-import constants as cons
 from letters_game import Letters
 from numbers_game import Numbers
 from character import Character
@@ -111,7 +110,7 @@ class MainMenu:
         self.handle_events()
 
     def draw(self):
-        self.screen.fill(pg.color.Color(cons.BACKGROUND_COLOR))
+        self.screen.fill(pg.color.Color("#DDF9DD"))
         self.headline.draw(self.screen)
         menu_start_x = 300
         menu_start_y = 300

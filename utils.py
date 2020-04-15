@@ -1,10 +1,9 @@
 import pygame as pg
 from random import choice, randint
-import constants as cons
 
 
 def rand_color():
-    color_string = choice(cons.THECOLORS)
+    color_string = choice(list(pg.colordict.THECOLORS.keys()))
     return pg.color.Color(color_string)
 
 

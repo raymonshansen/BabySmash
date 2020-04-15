@@ -1,14 +1,12 @@
 import pygame as pg
 from random import uniform, randint
 
-import constants as cons
-
 
 def random_vector(start, stop):
     return pg.Vector2(1, 1).rotate(uniform(start, stop)).normalize()
 
 
-class Particle():
+class Particle:
     def __init__(self, x, y, size, color, speed, ttl):
         self.pos = pg.Vector2(x, y)
         self.size = (size, size)
@@ -40,10 +38,12 @@ class Particle():
 class NullGenerator:
     def update(self, *args):
         pass
+
     def draw(self):
         pass
 
-class ParticleGenerator():
+
+class ParticleGenerator:
     def __init__(self, x, y, rate, screen, color):
         self.pos = pg.Vector2(x, y)
         self.particles = list()
@@ -62,7 +62,7 @@ class ParticleGenerator():
     def generate_particle(self):
         x = self.pos.x
         y = self.pos.y
-        size = randint(cons.PARTICLE_MIN, cons.PARTICLE_MAX)
+        size = randint(30, 70)
         speed = 10
         ttl = randint(60, 180)
         return Particle(x, y, size, self.color, speed, ttl)
