@@ -42,6 +42,7 @@ class Letters:
         self.clock = pg.time.Clock()
         self.running = True
         self.char_buffer = [Character()] * config["buffersize"]
+        self.fading_buffer = []
 
         # Is this a separate game?? :)
         self.part_gen = NullGenerator()
@@ -71,17 +72,17 @@ class Letters:
                     continue
                 new_char = self.non_overlapping_character(char)
                 self.update_char_buffer(new_char)
-                self.char_buffer[0].set_fade_speed(10)
             if event.type == MOUSEBUTTONDOWN:
                 self.part_gen = ParticleGenerator(x, y, 1, self.screen, rand_color())
             if event.type == MOUSEBUTTONUP:
                 self.part_gen = NullGenerator()
+        self.fading_buffer = [c for c in self.fading_buffer if c.alpha]
         self.part_gen.update(x, y)
         self.check_quit()
 
     def draw(self):
         self.screen.fill(pg.color.Color("gray98"))
-        for letter in self.char_buffer:
+        for letter in self.char_buffer + self.fading_buffer:
             letter.draw(self.screen)
         self.part_gen.draw()
         pg.display.update()
@@ -94,8 +95,9 @@ class Letters:
 
     def update_char_buffer(self, new_char):
         self.char_buffer.append(new_char)
-        if self.char_buffer[0].alpha == 0:
-            self.char_buffer.pop(0)
+        ejected_char = self.char_buffer.pop(0)
+        ejected_char.set_fade_speed(10)
+        self.fading_buffer.append(ejected_char)
 
     def check_quit(self):
         if QUIT_WORD in self.buffer_to_string():
