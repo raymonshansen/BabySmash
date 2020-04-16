@@ -34,7 +34,7 @@ class MainMenuHeadline:
 
 
 class MenuItem:
-    def __init__(self, Item):
+    def __init__(self, Item, pos):
         self.unsel_text_col = pg.color.Color(215, 220, 215)
         self.sel_text_col = pg.color.Color(255, 250, 255)
         self.selected_col = pg.color.Color(99, 170, 130)
@@ -43,29 +43,32 @@ class MenuItem:
         self.textsurf = self.font.render(Item.main_menu_name, True, self.unsel_text_col)
         self.menu_text = Item.main_menu_name
         self.state = Item.game_name
-        self.selected = False
+        self._setup_rects(pos)
 
-    def flip_state(self):
-        self.selected = not self.selected
+    def _setup_rects(self, pos):
+        self.unsel_rect = pg.Rect(pos, (600, 130))
+        self.sel_outer_rect = pg.Rect(pos[0], pos[1], 800, 130)
+        self.sel_inner_rect = self.sel_outer_rect.inflate(-20, -20)
 
-    def draw(self, screen, pos):
-        x, y = pos
-        DI = 10
-        HI = 130
-        SEL_LEN = 800
-        UNSEL_LEN = 600
-        if self.selected:
+    @property
+    def usel_rect(self):
+        return self.unsel_rect
+
+    @property
+    def sel_rect(self):
+        return self.sel_outer_rect
+
+    def draw(self, screen, selected):
+        if selected:
             self.textsurf = self.font.render(self.menu_text, True, self.sel_text_col)
-            pg.draw.rect(screen, self.selected_col, (x - DI, y, SEL_LEN, HI), 3)
-            pg.draw.rect(
-                screen, self.selected_col, (x, y + DI, SEL_LEN - DI - DI, HI - DI - DI)
-            )
-            pos = (x + DI + DI, y)
-        if not self.selected:
+            text_pos = self.sel_outer_rect.left + 35, self.sel_outer_rect.top
+            pg.draw.rect(screen, self.selected_col, self.sel_outer_rect, 3)
+            pg.draw.rect(screen, self.selected_col, self.sel_inner_rect)
+        else:
+            text_pos = self.unsel_rect.left + 20, self.unsel_rect.top
             self.textsurf = self.font.render(self.menu_text, True, self.unsel_text_col)
-            pg.draw.rect(screen, self.unselected_col, (x - DI, y, UNSEL_LEN, HI))
-            pos = (x + DI, y)
-        screen.blit(self.textsurf, pos)
+            pg.draw.rect(screen, self.unselected_col, self.unsel_rect)
+        screen.blit(self.textsurf, text_pos)
 
 
 class MainMenu:
@@ -78,33 +81,40 @@ class MainMenu:
         self.load_menu_items(menu_items)
 
     def load_menu_items(self, menu_items):
-        for item in menu_items:
-            self.items.append(MenuItem(item))
-        self.items[self.sel_idx].flip_state()
+        menu_start_x = 300
+        menu_start_y = 300
+        for idx, item in enumerate(menu_items, 1):
+            item_pos = menu_start_x, menu_start_y * idx
+            self.items.append(MenuItem(item, item_pos))
 
     def up(self):
-        self.items[self.sel_idx].flip_state()
         self.sel_idx -= 1
         self.sel_idx %= len(self.items)
-        self.items[self.sel_idx].flip_state()
 
     def down(self):
-        self.items[self.sel_idx].flip_state()
         self.sel_idx += 1
         self.sel_idx %= len(self.items)
-        self.items[self.sel_idx].flip_state()
 
     def handle_events(self):
         for event in pg.event.get():
             if event.type == pg.KEYDOWN and event.key == pg.K_RIGHT:
                 print(f"{self.items[self.sel_idx].menu_text} Config")
-            if event.type == pg.KEYDOWN and event.key == pg.K_DOWN:
+            elif event.type == pg.KEYDOWN and event.key == pg.K_DOWN:
                 self.down()
-            if event.type == pg.KEYDOWN and event.key == pg.K_UP:
+            elif event.type == pg.KEYDOWN and event.key == pg.K_UP:
                 self.up()
-            if event.type == pg.KEYDOWN and event.key == pg.K_RETURN:
-                current_menu_item = self.items[self.sel_idx]
-                self.switch_state(current_menu_item.state)
+            elif event.type == pg.MOUSEMOTION:
+                pos = pg.mouse.get_pos()
+                for idx, item in enumerate(self.items):
+                    if item.usel_rect.collidepoint(pos):
+                        self.sel_idx = idx
+            elif event.type == pg.MOUSEBUTTONDOWN:
+                pos = pg.mouse.get_pos()
+                for idx, item in enumerate(self.items):
+                    if item.sel_rect.collidepoint(pos) and idx == self.sel_idx:
+                        self.switch_state(self.items[self.sel_idx].state)
+            elif event.type == pg.KEYDOWN and event.key == pg.K_RETURN:
+                self.switch_state(self.items[self.sel_idx].state)
 
     def update(self):
         self.handle_events()
@@ -112,11 +122,8 @@ class MainMenu:
     def draw(self):
         self.screen.fill(pg.color.Color("#DDF9DD"))
         self.headline.draw(self.screen)
-        menu_start_x = 300
-        menu_start_y = 300
-        for idx, menu_item in enumerate(self.items, 1):
-            item_pos = (menu_start_x, menu_start_y * idx)
-            menu_item.draw(self.screen, item_pos)
+        for idx, menu_item in enumerate(self.items):
+            menu_item.draw(self.screen, idx == self.sel_idx)
 
 
 class Config:
