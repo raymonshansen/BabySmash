@@ -160,7 +160,10 @@ class Application:
         self.clock = pg.time.Clock()
         self.done = False
 
-        self.switch_state()
+        self.base_state = MainMenu(
+            self.screen, self.switch_state, [Letters, Numbers, Exit]
+        )
+        self.current_state = self.base_state
 
     def set_icon_and_window_title(self):
         icon = pg.image.load(os.path.join("images", "BabySmashIcon.png"))
@@ -181,9 +184,7 @@ class Application:
         elif state == "QUIT":
             self.done = True
         else:
-            self.current_state = MainMenu(
-                self.screen, self.switch_state, [Letters, Numbers, Exit]
-            )
+            self.current_state = self.base_state
 
     def exit_app(self):
         pg.quit()
