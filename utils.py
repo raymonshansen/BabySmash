@@ -5,7 +5,7 @@ from random import choice, randint
 def shadow_from_text(text, font, color):
     shadow = font.render(text, True, color)
     width, height = shadow.get_size()
-    small_size = int(width * 0.3), int(height * 0.3)
+    small_size = int(width * 0.2), int(height * 0.2)
     small = pg.transform.smoothscale(shadow, small_size)
     shadow = pg.transform.smoothscale(small, (width, height))
     return shadow
