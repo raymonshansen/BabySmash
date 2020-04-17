@@ -5,6 +5,7 @@ import configparser
 from letters_game import Letters
 from numbers_game import Numbers
 from character import Character
+from utils import shadow_from_text
 
 
 class Exit:
@@ -60,10 +61,14 @@ class MenuItem:
 
     def draw(self, screen, selected):
         if selected:
+            shade_col = pg.color.Color("#466C5A")
+            shade = shadow_from_text(self.menu_text, self.font, shade_col)
             self.textsurf = self.font.render(self.menu_text, True, self.sel_text_col)
             text_pos = self.sel_outer_rect.left + 35, self.sel_outer_rect.top
+            shade_pos = self.sel_outer_rect.left + 30, self.sel_outer_rect.top + 5
             pg.draw.rect(screen, self.selected_col, self.sel_outer_rect, 3)
             pg.draw.rect(screen, self.selected_col, self.sel_inner_rect)
+            screen.blit(shade, shade_pos)
         else:
             text_pos = self.unsel_rect.left + 20, self.unsel_rect.top
             self.textsurf = self.font.render(self.menu_text, True, self.unsel_text_col)
