@@ -2,13 +2,18 @@ import pygame as pg
 from random import choice, randint
 
 
+def blur_surface(surface, down, up=0.0):
+    width, height = surface.get_size()
+    small_size = int(width * down), int(height * down)
+    new_size = int(width * up), int(height * up)
+    small_surface = pg.transform.smoothscale(surface, small_size)
+    surface = pg.transform.smoothscale(small_surface, new_size)
+    return surface
+
+
 def shadow_from_text(text, font, color):
     shadow = font.render(text, True, color)
-    width, height = shadow.get_size()
-    small_size = int(width * 0.2), int(height * 0.2)
-    small = pg.transform.smoothscale(shadow, small_size)
-    shadow = pg.transform.smoothscale(small, (width, height))
-    return shadow
+    return blur_surface(shadow, 0.2)
 
 
 def rand_color():
