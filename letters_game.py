@@ -18,8 +18,9 @@ class Letters:
     @classmethod
     def config_params(cls):
         return {
+            "preview_file": "letters_preview.png",
             "header": "Letters",
-            "info": "Hammer the keyboard! Type: 'QUIT' to exit.",
+            "info": "Hammer the keyboard! \nType: 'QUIT' to exit. \nIgnores all keys except the letter-keys. Hitting any other keys does nothing",
             "config_items": [
                 {
                     "header": "Buffer size",

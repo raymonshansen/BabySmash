@@ -4,13 +4,22 @@ import os
 import json
 from letters_game import Letters
 from numbers_game import Numbers
-from utils import shadow_from_text
+from utils import shadow_from_text, wrap_text
 
 
 class Exit:
     state_name = "QUIT"
     config_state_name = ""
-    main_menu_name = "EXIT"
+    main_menu_name = "Exit"
+
+    @classmethod
+    def config_params(cls):
+        return {
+            "header": "Exit",
+            "preview_file": "",
+            "info": "Exit the game",
+            "config_items": [],
+        }
 
 
 class MainMenuBG:
@@ -32,14 +41,67 @@ class MainMenuHeadline:
         screen.blit(self.textsurf, (50, 50))
 
 
+class MenuItemInfobox:
+    def __init__(self, Item, pos):
+        self.font = pg.font.SysFont("ubuntumono", 25)
+        self.empty = Item.main_menu_name == "Exit"
+        self.rect = pg.Rect((457, pos[1] - 8), (500, 650))
+        self.image = self._load_preview(Item.config_params()["preview_file"])
+        self.border_col = pg.Color(100, 170, 130)
+        self.text_color = pg.Color("#333745")
+        info_text = wrap_text(Item.config_params()["info"], self.font, 500)
+        self.textsurf = self.render_text_list(info_text)
+        print(self.image)
+        new_h = self.textsurf.get_height() + self.image.get_size()[1] + 50
+        self.rect.h = new_h
+        self.title_pos = (
+            self.rect.x + 10,
+            self.rect.y + 10,
+        )
+
+    def _load_preview(self, filename):
+        img = pg.Surface((10, 10), pg.SRCALPHA)
+        if not self.empty:
+            img = pg.image.load(os.path.join("images", filename))
+            width = self.rect.w - 40
+            frac = width / 1920
+            height = int(1080 * frac)
+            img = pg.transform.scale(img, (width, height))
+        return img
+
+    def render_text_list(self, lines):
+        rendered = [self.font.render(line, True, self.text_color) for line in lines]
+        line_height = self.font.get_linesize()
+        width = max(line.get_width() for line in rendered)
+        tops = [int(round(i * line_height)) for i in range(len(rendered))]
+        height = tops[-1] + self.font.get_height()
+
+        surface = pg.Surface((width, height), pg.SRCALPHA)
+        for y, line in zip(tops, rendered):
+            surface.blit(line, (0, y))
+
+        return surface
+
+    def set_color(self, col):
+        self.border_col = col
+
+    def draw(self, screen):
+        if not self.empty:
+            screen.blit(self.textsurf, self.title_pos)
+            prev_pos = self.rect.x + 20, self.textsurf.get_size()[1] + self.rect.y + 30
+            pg.draw.rect(screen, self.border_col, self.rect, 3)
+            screen.blit(self.image, prev_pos)
+
+
 class MenuItem:
     def __init__(self, Item, pos):
+        self.font = pg.font.SysFont("ubuntumono", 45)
+        self.info = MenuItemInfobox(Item, pos)
         self.unsel_text_col = pg.color.Color(215, 220, 215)
         self.sel_text_col = pg.color.Color(255, 250, 255)
         self.selected_col = pg.color.Color(100, 170, 130)
         self.s_col_o = pg.color.Color(100, 170, 130)
         self.unselected_col = pg.color.Color("#365E53")
-        self.font = pg.font.SysFont("ubuntumono", 45)
         self.unsel_text = self.font.render(
             Item.main_menu_name, True, self.unsel_text_col
         )
@@ -72,12 +134,14 @@ class MenuItem:
         self.cols_i += 1
         self.cols_i %= len(self.cols)
         self.s_col_o.r, self.s_col_o.g, self.s_col_o.b = self.cols[self.cols_i]
+        self.info.set_color(self.s_col_o)
 
     def draw(self, screen, selected):
         if selected:
+            self.info.draw(screen)
             text_pos = self.sel_border_rect.left + 17, self.sel_border_rect.y + 12
             shade_pos = self.sel_border_rect.left + 15, self.sel_border_rect.y + 14
-            pg.draw.rect(screen, self.s_col_o, self.sel_border_rect, 4)
+            pg.draw.rect(screen, self.s_col_o, self.sel_border_rect, 3)
             screen.fill(self.selected_col, self.sell_rect)
             text = self.sel_text
         else:

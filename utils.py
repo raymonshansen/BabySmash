@@ -26,3 +26,32 @@ def rand_screen_pos(screen_width, screen_height, w, h):
     return a random position(topleft) that puts the object within
     screen boundaries."""
     return (randint(0, screen_width - w), randint(0, screen_height - h))
+
+
+def wrap_text(text, font, width):
+    """Wrap text to fit inside a given width when rendered."""
+    text_lines = text.replace("\t", "    ").split("\n")
+
+    wrapped_lines = []
+    for line in text_lines:
+        line = line.rstrip() + " "
+        if line == " ":
+            wrapped_lines.append(line)
+            continue
+
+        # Get the leftmost space ignoring leading whitespace
+        start = len(line) - len(line.lstrip())
+        start = line.index(" ", start)
+        while start + 1 < len(line):
+            # Get the next potential splitting point
+            next = line.index(" ", start + 1)
+            if font.size(line[:next])[0] <= width:
+                start = next
+            else:
+                wrapped_lines.append(line[:start])
+                line = line[start + 1 :]
+                start = line.index(" ")
+        line = line[:-1]
+        if line:
+            wrapped_lines.append(line)
+    return wrapped_lines

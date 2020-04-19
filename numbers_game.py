@@ -31,7 +31,8 @@ class Numbers:
     def config_params(cls):
         return {
             "header": "Numbers",
-            "info": "Use the number keys! Type: 'q' to exit.",
+            "preview_file": "numbers_preview.png",
+            "info": "Use the number keys! \nType: 'q' to exit. \nThe corresponding number is displayed in the top left corner along with the correct number of figures. Currently has snail, ladybug and butterfly.",
             "config_items": [
                 {
                     "header": "Random rotate",
