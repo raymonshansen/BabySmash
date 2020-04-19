@@ -137,7 +137,6 @@ class MainMenu:
 
     def draw(self):
         self.bg.draw(self.screen)
-        self.screen.fill(pg.color.Color("#DDF9DD"))
         self.headline.draw(self.screen)
         for idx, menu_item in enumerate(self.items):
             menu_item.draw(self.screen, idx == self.sel_idx)
