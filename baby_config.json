@@ -1,0 +1,16 @@
+{
+    "LETTERS_CONFIG": {
+        "buffer_size": 5,
+        "letter_size": [
+            64,
+            1024
+        ]
+    },
+    "NUMBERS_CONFIG": {
+        "number_size": [
+            16,
+            1024
+        ],
+        "random_rotate": true
+    }
+}

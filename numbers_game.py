@@ -1,6 +1,7 @@
 import pygame as pg
 from pygame.locals import KEYDOWN
 import os
+from config import ConfigWidget
 from random import randint, uniform, choice
 from character import Character
 from utils import rand_screen_pos
@@ -22,27 +23,31 @@ class Image:
 
 
 class Numbers:
-    game_name = "NUMBERS"
+    state_name = "NUMBERS"
+    config_state_name = "NUMBERS_CONFIG"
     main_menu_name = "Numbers"
 
     @classmethod
     def config_params(cls):
         return {
-            "min_number_size": {
-                "type": int,
-                "validator": lambda num: 16 <= num <= 256,
-                "default": 64,
-            },
-            "max_number_size": {
-                "type": int,
-                "validator": lambda num: 512 <= num <= 1024,
-                "default": 800,
-            },
-            "random_rotate": {
-                "type": lambda x: x.upper() in ["TRUE", "YES", "ON", "1"],
-                "validator": lambda x: True,
-                "default": False,
-            },
+            "header": "Numbers",
+            "info": "Use the number keys! Type: 'q' to exit.",
+            "config_items": [
+                {
+                    "header": "Random rotate",
+                    "type": ConfigWidget.CHECK_BOX,
+                    "param_name": "random_rotate",
+                    "default": True,
+                },
+                {
+                    "header": "Number size",
+                    "type": ConfigWidget.DOUBLE_SLIDER,
+                    "param_name": "number_size",
+                    "range": [16, 1024],
+                    "default": [64, 1024],
+                    "step": 8,
+                },
+            ],
         }
 
     def __init__(self, screen, quit_func, config):
@@ -58,7 +63,7 @@ class Numbers:
 
     @property
     def number_size(self):
-        return (self.config["min_number_size"], self.config["max_number_size"])
+        return (self.config["number_size"][0], self.config["number_size"][1])
 
     @property
     def rotate_angle(self):

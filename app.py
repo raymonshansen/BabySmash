@@ -1,15 +1,15 @@
 import pygame as pg
 import sys
 import os
-import configparser
+import json
 from letters_game import Letters
 from numbers_game import Numbers
-from character import Character
 from utils import shadow_from_text
 
 
 class Exit:
-    game_name = "QUIT"
+    state_name = "QUIT"
+    config_state_name = ""
     main_menu_name = "EXIT"
 
 
@@ -118,7 +118,7 @@ class MainMenu:
     def handle_events(self):
         for event in pg.event.get():
             if event.type == pg.KEYDOWN and event.key == pg.K_RIGHT:
-                print(f"{self.items[self.sel_idx].menu_text} Config")
+                self.switch_state(self.items[self.sel_idx].config_state_name)
             elif event.type == pg.KEYDOWN and event.key == pg.K_DOWN:
                 self.down()
             elif event.type == pg.KEYDOWN and event.key == pg.K_UP:
@@ -138,6 +138,8 @@ class MainMenu:
 
     def update(self):
         self.handle_events()
+        for menu_item in self.items:
+            menu_item.update()
 
     def draw(self):
         self.bg.draw(self.screen)
@@ -148,25 +150,18 @@ class MainMenu:
 
 class Config:
     def __init__(self, config_file_name):
-        self.config = configparser.ConfigParser()
-        self.config.read(config_file_name)
+        self.file_name = config_file_name
+        with open(config_file_name) as fp:
+            self.config = json.load(fp)
 
     def get_game_config(self, game_class):
-        config_definition = game_class.config_params()
-        from_file = self.config[game_class.game_name]
-        fixed_config = dict()
-        for k, v in config_definition.items():
-            converter = v["type"]
-            stored_string_value = from_file[k]
-            try:
-                converted = converter(stored_string_value)
-                if v["validator"](converted):
-                    fixed_config[k] = converted
-            except ValueError:
-                # TODO: Notify user likely set incompatible config values!
-                print("Cannot use")
-                fixed_config[k] = v["default"]
-        return fixed_config
+        return self.config[game_class.config_state_name]
+
+
+class MenuConfig:
+    def __init__(self, screen, quit_func, config_params):
+        print(config_params)
+        quit_func()
 
 
 class Application:
@@ -174,7 +169,7 @@ class Application:
         pg.init()
         pg.font.init()
         self.set_icon_and_window_title()
-        self.config = Config("baby_config.ini")
+        self.config = Config("baby_config.json")
 
         self.screen = pg.display.set_mode((1920, 1080))
         self.clock = pg.time.Clock()
@@ -191,15 +186,23 @@ class Application:
         pg.display.set_caption("BabySmash")
 
     def switch_state(self, state=None):
+        if state == "NUMBERS_CONFIG":
+            self.current_state = MenuConfig(
+                self.screen, lambda: self.switch_state(), Numbers.config_params()
+            )
+        if state == "LETTERS_CONFIG":
+            self.current_state = MenuConfig(
+                self.screen, lambda: self.switch_state(), Letters.config_params()
+            )
         if state == "LETTERS":
-            fixed_config = self.config.get_game_config(Letters)
+            config = self.config.get_game_config(Letters)
             self.current_state = Letters(
-                self.screen, lambda: self.switch_state(), fixed_config
+                self.screen, lambda: self.switch_state(), config
             )
         elif state == "NUMBERS":
-            fixed_config = self.config.get_game_config(Numbers)
+            config = self.config.get_game_config(Numbers)
             self.current_state = Numbers(
-                self.screen, lambda: self.switch_state(), fixed_config
+                self.screen, lambda: self.switch_state(), config
             )
         elif state == "QUIT":
             self.done = True

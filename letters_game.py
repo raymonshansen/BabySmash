@@ -1,6 +1,7 @@
 import pygame as pg
 from pygame.locals import KEYDOWN, MOUSEBUTTONDOWN, MOUSEBUTTONUP
 from random import randint
+from config import ConfigWidget
 
 from utils import rand_color, rand_screen_pos
 from particles import ParticleGenerator, NullGenerator
@@ -10,27 +11,33 @@ QUIT_WORD = "QUIT"
 
 
 class Letters:
-    game_name = "LETTERS"
+    state_name = "LETTERS"
+    config_state_name = "LETTERS_CONFIG"
     main_menu_name = "Letters"
 
     @classmethod
     def config_params(cls):
         return {
-            "buffersize": {
-                "type": int,
-                "validator": lambda num: len(QUIT_WORD) <= num <= 16,
-                "default": 5,
-            },
-            "min_letter_size": {
-                "type": int,
-                "validator": lambda num: 16 <= num <= 256,
-                "default": 64,
-            },
-            "max_letter_size": {
-                "type": int,
-                "validator": lambda num: 512 <= num <= 1024,
-                "default": 800,
-            },
+            "header": "Letters",
+            "info": "Hammer the keyboard! Type: 'QUIT' to exit.",
+            "config_items": [
+                {
+                    "header": "Buffer size",
+                    "type": ConfigWidget.SINGLE_SLIDER,
+                    "param_name": "buffer_size",
+                    "range": [len(QUIT_WORD), 16],
+                    "default": 5,
+                    "step": 1,
+                },
+                {
+                    "header": "Letter size",
+                    "type": ConfigWidget.DOUBLE_SLIDER,
+                    "param_name": "letter_size",
+                    "range": [16, 1024],
+                    "default": [64, 1024],
+                    "step": 8,
+                },
+            ],
         }
 
     def __init__(self, screen, quit_func, config):
@@ -41,20 +48,22 @@ class Letters:
         self.config = config
         self.clock = pg.time.Clock()
         self.running = True
-        self.char_buffer = [Character()] * config["buffersize"]
+        self.char_buffer = [Character()] * config["buffer_size"]
         self.fading_buffer = []
 
         # Is this a separate game?? :)
         self.part_gen = NullGenerator()
+
+    @property
+    def letter_size(self):
+        return self.config["letter_size"][0], self.config["letter_size"][1]
 
     def non_overlapping_character(self, char):
         """Return a character_object that does not overlap
         with any of the ones currently in the buffer."""
         while True:
             # TODO: This loop might never terminate!
-            size = randint(
-                self.config["min_letter_size"], self.config["max_letter_size"]
-            )
+            size = randint(*self.letter_size)
             w, h = self.screen.get_size()
             pos = rand_screen_pos(w, h, size, size)
             new_char_object = Character(char, size, pos)
