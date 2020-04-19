@@ -24,41 +24,41 @@ class MainMenuBG:
 
 class MainMenuHeadline:
     def __init__(self, text="[insert header]"):
-        self.rect = pg.Rect(50, 50, (50 * len(text)), 120)
-        self.header_buffer = self.generate_headline(text)
-
-    def generate_headline(self, text):
-        header_buffer = list()
-        start_x = self.rect.left
-        for letter in text:
-            pos = (start_x, self.rect.top)
-            size = 120
-            start_x += 60
-            color = pg.color.Color("#365E53")
-            header_buffer.append(Character(letter, size, pos, color))
-        return header_buffer
+        font = pg.font.SysFont("ubuntumono", 120, 1)
+        col = pg.color.Color("#466C5A")
+        self.textsurf = font.render(text, True, col)
 
     def draw(self, screen):
-        for char in self.header_buffer:
-            char.draw(screen)
+        screen.blit(self.textsurf, (50, 50))
 
 
 class MenuItem:
     def __init__(self, Item, pos):
         self.unsel_text_col = pg.color.Color(215, 220, 215)
         self.sel_text_col = pg.color.Color(255, 250, 255)
-        self.selected_col = pg.color.Color(99, 170, 130)
+        self.selected_col = pg.color.Color(100, 170, 130)
+        self.s_col_o = pg.color.Color(100, 170, 130)
         self.unselected_col = pg.color.Color("#365E53")
-        self.font = pg.font.SysFont("ubuntumono", 45, 1)
-        self.textsurf = self.font.render(Item.main_menu_name, True, self.unsel_text_col)
-        self.menu_text = Item.main_menu_name
-        self.state = Item.game_name
+        self.font = pg.font.SysFont("ubuntumono", 45)
+        self.unsel_text = self.font.render(
+            Item.main_menu_name, True, self.unsel_text_col
+        )
+        self.sel_text = self.font.render(Item.main_menu_name, True, self.sel_text_col)
+        self.shade_text = shadow_from_text(
+            Item.main_menu_name, self.font, pg.color.Color("#333745"), 0.3
+        )
+        self.state = Item.state_name
+        self.config_state_name = Item.config_state_name
         self._setup_rects(pos)
+        self.cols = list(zip(range(70, 130, 4), range(140, 200, 4), range(100, 160, 4)))
+        self.cols += reversed(self.cols)
+        self.cols_i = 0
 
     def _setup_rects(self, pos):
+        self.inner_rect_w = 0
         self.unsel_rect = pg.Rect(pos, (300, 65))
-        self.sel_outer_rect = pg.Rect(pos[0], pos[1], 400, 65)
-        self.sel_inner_rect = self.sel_outer_rect.inflate(-10, -10)
+        self.sell_rect = pg.Rect(pos, (400, 65))
+        self.sel_border_rect = self.sell_rect.inflate(16, 16)
 
     @property
     def usel_rect(self):
@@ -66,23 +66,27 @@ class MenuItem:
 
     @property
     def sel_rect(self):
-        return self.sel_outer_rect
+        return self.sel_border_rect
+
+    def update(self):
+        self.cols_i += 1
+        self.cols_i %= len(self.cols)
+        self.s_col_o.r, self.s_col_o.g, self.s_col_o.b = self.cols[self.cols_i]
 
     def draw(self, screen, selected):
         if selected:
-            shade_col = pg.color.Color("#466C5A")
-            shade = shadow_from_text(self.menu_text, self.font, shade_col)
-            self.textsurf = self.font.render(self.menu_text, True, self.sel_text_col)
-            text_pos = self.sel_outer_rect.left + 17, self.sel_outer_rect.y + 7
-            shade_pos = self.sel_outer_rect.left + 15, self.sel_outer_rect.y + 7
-            pg.draw.rect(screen, self.selected_col, self.sel_outer_rect, 3)
-            pg.draw.rect(screen, self.selected_col, self.sel_inner_rect)
-            screen.blit(shade, shade_pos)
+            text_pos = self.sel_border_rect.left + 17, self.sel_border_rect.y + 12
+            shade_pos = self.sel_border_rect.left + 15, self.sel_border_rect.y + 14
+            pg.draw.rect(screen, self.s_col_o, self.sel_border_rect, 4)
+            screen.fill(self.selected_col, self.sell_rect)
+            text = self.sel_text
         else:
-            text_pos = self.unsel_rect.left + 10, self.unsel_rect.y + 7
-            self.textsurf = self.font.render(self.menu_text, True, self.unsel_text_col)
-            pg.draw.rect(screen, self.unselected_col, self.unsel_rect)
-        screen.blit(self.textsurf, text_pos)
+            text_pos = self.unsel_rect.left + 10, self.unsel_rect.y + 12
+            shade_pos = self.unsel_rect.left + 10, self.unsel_rect.y + 12
+            screen.fill(self.unselected_col, self.unsel_rect)
+            text = self.unsel_text
+        screen.blit(self.shade_text, shade_pos)
+        screen.blit(text, text_pos)
 
 
 class MainMenu:
