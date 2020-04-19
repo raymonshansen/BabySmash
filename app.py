@@ -13,6 +13,15 @@ class Exit:
     main_menu_name = "EXIT"
 
 
+class MainMenuBG:
+    def __init__(self):
+        self.image = pg.image.load(os.path.join("images", "BabySmashBG_static.png"))
+        self.rect = pg.Rect(0, 0, 1920, 1080)
+
+    def draw(self, screen):
+        screen.blit(self.image, self.rect)
+
+
 class MainMenuHeadline:
     def __init__(self, text="[insert header]"):
         self.rect = pg.Rect(50, 50, (50 * len(text)), 120)
@@ -83,6 +92,7 @@ class MainMenu:
         self.items = list()
         self.sel_idx = 0
         self.headline = MainMenuHeadline("Baby Smash!")
+        self.bg = MainMenuBG()
         self.load_menu_items(menu_items)
 
     def load_menu_items(self, menu_items):
@@ -126,6 +136,7 @@ class MainMenu:
         self.handle_events()
 
     def draw(self):
+        self.bg.draw(self.screen)
         self.screen.fill(pg.color.Color("#DDF9DD"))
         self.headline.draw(self.screen)
         for idx, menu_item in enumerate(self.items):
