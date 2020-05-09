@@ -6,6 +6,10 @@ from letters_game import Letters
 from numbers_game import Numbers
 from utils import shadow_from_text, wrap_text
 
+# To fetch screen resolution
+from Xlib.display import Display
+
+
 
 class Exit:
     state_name = "QUIT"
@@ -21,11 +25,30 @@ class Exit:
             "config_items": [],
         }
 
+class ScreenRes:
+    def __init__(self):
+        # Default to 1024x768
+        self.height = 768
+        self.width = 1024
+        self.height, self.width = self.get_resolution()
+
+    def get_resolution(self):
+        s = Display(':0').screen()
+        return s.height_in_pixels, s.width_in_pixels
+
+    def percent_of_height(self, p):
+        return (self.height / 100) * p
+    def percent_of_width(self, p):
+        return (self.width / 100) * p
+
+
 
 class MainMenuBG:
     def __init__(self):
         self.image = pg.image.load(os.path.join("images", "BabySmashBG_static.png"))
-        self.rect = pg.Rect(0, 0, 1920, 1080)
+        sr = ScreenRes()
+
+        self.rect = pg.Rect(0, 0, sr.height, sr.width)
 
     def draw(self, screen):
         screen.blit(self.image, self.rect)
@@ -156,6 +179,7 @@ class MenuItem:
 class MainMenu:
     def __init__(self, screen, switch_state_func, menu_items):
         self.screen = screen
+        self.screen_res = ScreenRes()
         self.switch_state = switch_state_func
         self.items = list()
         self.sel_idx = 0
@@ -164,8 +188,8 @@ class MainMenu:
         self.load_menu_items(menu_items)
 
     def load_menu_items(self, menu_items):
-        menu_start_x = 50
-        menu_start_y = 120
+        menu_start_x = self.screen_res.percent_of_width(5)
+        menu_start_y = self.screen_res.percent_of_height(5)
         item_spacing = 110
         for idx, item in enumerate(menu_items, 1):
             item_pos = menu_start_x, menu_start_y + (item_spacing * idx)
@@ -234,8 +258,8 @@ class Application:
         pg.font.init()
         self.set_icon_and_window_title()
         self.config = Config("baby_config.json")
-
-        self.screen = pg.display.set_mode((1920, 1080))
+        self.screen_res = ScreenRes()
+        self.screen = pg.display.set_mode((self.screen_res.width, self.screen_res.height))
         self.clock = pg.time.Clock()
         self.done = False
 
