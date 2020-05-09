@@ -9,8 +9,10 @@ If you where looking for 'BabySmash!' by Scott Hanselmann, you'll find it here:
 https://www.hanselman.com/babysmash/
 
 ## Dependencies
-pygame
+python3-pygame
+python3-xlib
 python3
+
 
 ## Run
 ```python3 app.py```
