@@ -66,6 +66,13 @@ class Letters:
             # TODO: This loop might never terminate!
             size = randint(*self.letter_size)
             w, h = self.screen.get_size()
+
+            # Observed that the size some times was bigger than the screen resolution,
+            # causing the program to crash. The loop below ensure that the size is within the
+            # screen boundaries.
+            while size > h or size > w:
+                size = randint(*self.letter_size)
+
             pos = rand_screen_pos(w, h, size, size)
             new_char_object = Character(char, size, pos)
             index = new_char_object.get_rect().collidelist(self.buffer_to_rects())
