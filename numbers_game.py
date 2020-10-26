@@ -27,30 +27,6 @@ class Numbers:
     config_state_name = "NUMBERS_CONFIG"
     main_menu_name = "Numbers"
 
-    @classmethod
-    def config_params(cls):
-        return {
-            "header": "Numbers",
-            "preview_file": "numbers_preview.png",
-            "info": "Use the number keys! \nType: 'q' to exit. \nThe corresponding number is displayed in the top left corner along with the correct number of figures. Currently has snail, ladybug and butterfly.",
-            "config_items": [
-                {
-                    "header": "Random rotate",
-                    "type": ConfigWidget.CHECK_BOX,
-                    "param_name": "random_rotate",
-                    "default": True,
-                },
-                {
-                    "header": "Number size",
-                    "type": ConfigWidget.DOUBLE_SLIDER,
-                    "param_name": "number_size",
-                    "range": [16, 1024],
-                    "default": [64, 1024],
-                    "step": 8,
-                },
-            ],
-        }
-
     def __init__(self, screen, quit_func, config):
         pg.init()
         pg.font.init()
