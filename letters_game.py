@@ -80,7 +80,7 @@ class Letters:
     def update_char_buffer(self, new_char):
         self.char_buffer.append(new_char)
         ejected_char = self.char_buffer.pop(0)
-        ejected_char.set_fade_speed(10)
+        ejected_char.fade_speed = 10
         self.fading_buffer.append(ejected_char)
 
     def check_quit(self):
