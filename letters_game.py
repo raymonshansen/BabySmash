@@ -15,32 +15,6 @@ class Letters:
     config_state_name = "LETTERS_CONFIG"
     main_menu_name = "Letters"
 
-    @classmethod
-    def config_params(cls):
-        return {
-            "preview_file": "letters_preview.png",
-            "header": "Letters",
-            "info": "Hammer the keyboard! \nType: 'QUIT' to exit. \nIgnores all keys except the letter-keys. Hitting any other keys does nothing",
-            "config_items": [
-                {
-                    "header": "Buffer size",
-                    "type": ConfigWidget.SINGLE_SLIDER,
-                    "param_name": "buffer_size",
-                    "range": [len(QUIT_WORD), 16],
-                    "default": 5,
-                    "step": 1,
-                },
-                {
-                    "header": "Letter size",
-                    "type": ConfigWidget.DOUBLE_SLIDER,
-                    "param_name": "letter_size",
-                    "range": [16, 1024],
-                    "default": [64, 1024],
-                    "step": 8,
-                },
-            ],
-        }
-
     def __init__(self, screen, quit_func, config):
         pg.init()
         pg.font.init()
