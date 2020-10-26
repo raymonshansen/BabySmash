@@ -24,12 +24,9 @@ class Character:
     def alpha(self):
         return self._alpha
 
-    @property.setter
+    @alpha.setter
     def alpha(self, num):
         self._alpha = max(0, min(num, 255))
-
-    def set_fade_speed(self, num):
-        self.fade_speed = num
 
     def move(self, new_pos):
         self.pos = new_pos
