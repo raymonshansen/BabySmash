@@ -113,6 +113,6 @@ class Numbers:
 
     def draw(self):
         self.screen.fill(pg.color.Color("gray98"))
-        self.number_char.draw(self.screen)
         for img in self.image_buffer:
             img.draw(self.screen)
+        self.number_char.draw(self.screen)
