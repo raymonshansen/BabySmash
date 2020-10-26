@@ -21,11 +21,7 @@ class Character:
         self.alphasurf = pg.Surface(self.textsurf.get_size(), pg.SRCALPHA)
 
     def set_alpha(self, num):
-        self.alpha = num
-        if num < 0:
-            self.alpha = 0
-        if num > 255:
-            self.alpha = 255
+        self.alpha = max(0, min(num, 255))
 
     def set_fade_speed(self, num):
         self.fade_speed = num
