@@ -61,12 +61,13 @@ class MenuItemInfobox:
 
     def _load_preview(self, filename):
         img = pg.Surface((10, 10), pg.SRCALPHA)
-        if not self.empty:
-            img = pg.image.load(os.path.join("images", filename))
-            width = self.rect.w - 40
-            frac = width / 1920
-            height = int(1080 * frac)
-            img = pg.transform.scale(img, (width, height))
+        if self.empty:
+            return img
+        img = pg.image.load(os.path.join("images", filename))
+        width = self.rect.w - 40
+        frac = width / 1920
+        height = int(1080 * frac)
+        img = pg.transform.scale(img, (width, height))
         return img
 
     def render_text_list(self, lines):
