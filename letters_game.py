@@ -57,7 +57,7 @@ class Letters:
 
     @property
     def letter_size(self):
-        return self.config["letter_size"][0], self.config["letter_size"][1]
+        return self.config["letter_size"][:2]
 
     def non_overlapping_character(self, char):
         """Return a character_object that does not overlap
