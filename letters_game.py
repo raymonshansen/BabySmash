@@ -1,7 +1,6 @@
 import pygame as pg
 from pygame.locals import KEYDOWN, MOUSEBUTTONDOWN, MOUSEBUTTONUP
 from random import randint
-from config import ConfigWidget
 
 from utils import rand_color, rand_screen_pos
 from particles import ParticleGenerator, NullGenerator
