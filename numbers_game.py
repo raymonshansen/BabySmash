@@ -1,7 +1,6 @@
 import pygame as pg
 from pygame.locals import KEYDOWN
 import os
-from config import ConfigWidget
 from random import randint, uniform, choice
 from character import Character
 from utils import rand_screen_pos
