@@ -12,5 +12,11 @@
             1024
         ],
         "random_rotate": true
+    },
+    "BALLONS_CONFIG": {
+        "ballon_size": [
+            16,
+            1024
+        ]
     }
 }
