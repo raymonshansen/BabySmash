@@ -4,6 +4,7 @@ import os
 import json
 from letters_game import Letters
 from numbers_game import Numbers
+from balloons_game import Balloons
 from utils import shadow_from_text, wrap_text
 
 
@@ -171,7 +172,7 @@ class Application:
         self.done = False
 
         self.base_state = MainMenu(
-            self.screen, self.switch_state, [Letters, Numbers, Exit]
+            self.screen, self.switch_state, [Letters, Numbers, Balloons, Exit]
         )
         self.current_state = self.base_state
 
@@ -181,14 +182,6 @@ class Application:
         pg.display.set_caption("BabySmash")
 
     def switch_state(self, state=None):
-        if state == "NUMBERS_CONFIG":
-            self.current_state = MenuConfig(
-                self.screen, lambda: self.switch_state(), Numbers.config_params()
-            )
-        if state == "LETTERS_CONFIG":
-            self.current_state = MenuConfig(
-                self.screen, lambda: self.switch_state(), Letters.config_params()
-            )
         if state == "LETTERS":
             config = self.config.get_game_config(Letters)
             self.current_state = Letters(
@@ -197,6 +190,11 @@ class Application:
         elif state == "NUMBERS":
             config = self.config.get_game_config(Numbers)
             self.current_state = Numbers(
+                self.screen, lambda: self.switch_state(), config
+            )
+        elif state == "BALLOONS":
+            config = self.config.get_game_config(Balloons)
+            self.current_state = Balloons(
                 self.screen, lambda: self.switch_state(), config
             )
         elif state == "QUIT":
@@ -213,7 +211,7 @@ class Application:
             self.current_state.update()
             self.current_state.draw()
             pg.display.update()
-            self.clock.tick(60)
+            self.clock.tick(30)
         self.exit_app()
 
 

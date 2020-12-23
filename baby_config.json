@@ -12,5 +12,14 @@
             1024
         ],
         "random_rotate": true
+    },
+    "BALLONS_CONFIG": {
+        "balloon_size": [
+            256,
+            1024
+        ],
+        "alphabet": "ABCDEFGHIJKLMNOPRSTUVWXYZÆØÅ",
+        "max_balloons": 7,
+        "min_balloons": 3
     }
 }
