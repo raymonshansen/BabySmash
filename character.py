@@ -4,16 +4,16 @@ from utils import rand_color
 
 class Character:
     def __init__(self, char=" ", size=3, pos=(0, 0), color=None):
-        print(pos)
         self.char = char[0]
+        self.pos = pos
         self.font = pg.font.SysFont("ubuntumono", size, bold=1)
         self.color = color or rand_color()
         self.origsurf = self.font.render(self.char, True, self.color)
         self.textsurf = self.origsurf.copy()
+        self.rect = pg.Rect(pos, self.textsurf.get_size())
         self.alphasurf = pg.Surface(self.textsurf.get_size(), pg.SRCALPHA)
         self.alpha = 255
         self.fade_speed = 0
-        self.pos = pos
 
     def resize(self, new_size):
         self.font = pg.font.Font("ubuntumono", new_size, bold=1)
@@ -33,7 +33,7 @@ class Character:
         self.pos = new_pos
 
     def get_rect(self):
-        return pg.Rect(self.pos, self.textsurf.get_size())
+        return self.rect
 
     def __str__(self):
         return self.char
