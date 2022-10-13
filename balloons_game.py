@@ -131,7 +131,7 @@ class Balloons:
                 if key_str == "" or key_str not in self.config['alphabet']:
                     pass
                 # Do balloons
-                if key_str == "Q":
+                if key_str == "ESCAPE":
                     self.quit()
                 for balloon in self.balloons:
                     if key_str == balloon.char:
