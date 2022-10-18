@@ -63,9 +63,9 @@ class Numbers:
         self.image_buffer.clear()
         self.image_buffer = [self.number_char]
         for _ in range(num):
+            initialSize=min(self.screen.get_size())
             while True:
-                # TODO: This loop might never terminate!
-                size = int(640 * uniform(0.1, 0.8))
+                size = int(initialSize * uniform(0.1, 0.8))
                 w, h = self.screen.get_size()
                 pos = rand_screen_pos(w, h, size, size)
                 test_rect = pg.Rect(pos, (size, size))
@@ -81,6 +81,7 @@ class Numbers:
                     )
                     self.image_buffer.append(lady)
                     break
+                initialSize = initialSize * 0.9 #Make slightly smaller for each iteration to ensure loop termination
         self.image_buffer.remove(self.number_char)
 
     def draw(self):
