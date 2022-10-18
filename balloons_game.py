@@ -124,6 +124,8 @@ class Balloons:
             balloon.update()
             if balloon.dead:
                 self.balloons.remove(balloon)
+        if len(self.balloons) < 1:
+            self.balloons = self.generate_balloons(5)
 
         for event in pg.event.get():
             if event.type == KEYDOWN:
