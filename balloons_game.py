@@ -1,6 +1,6 @@
 import pygame as pg
-import os
 import random
+from pathlib import Path
 from pygame.locals import KEYDOWN
 
 from utils import rand_screen_pos
@@ -45,7 +45,7 @@ class InGameBallon:
     def __init__(self, char="", size=500, pos=(0, 0), color="blue"):
         self.char = char
         self.rect = pg.Rect(pos, (size, size))
-        path = os.path.join("images\\balloon", f"balloon_{color}.png")
+        path = Path.cwd() / "images" / "balloon" / f"balloon_{color}.png"
         self.char_surf = get_balloon_char(char, size//4)
         self.char_rect = pg.Rect(pos, self.char_surf.get_size())
         self.pop_imgs = load_balloon_sprites(path, size)
@@ -95,7 +95,7 @@ class Balloons:
         self.config = config
         num = random.randint(self.config['min_balloons'], self.config['max_balloons'])
         self.balloons = self.generate_balloons(num)
-        path = os.path.join("sounds\\balloon", "balloon-pop.wav")
+        path = Path.cwd() / "sounds" / "balloon" / "balloon-pop.wav"
         self.pop_sound = pg.mixer.Sound(path)
 
     @property

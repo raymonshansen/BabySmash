@@ -1,6 +1,6 @@
 import pygame as pg
 from pygame.locals import KEYDOWN
-import os
+from pathlib import Path
 from random import randint, uniform, choice
 from character import Character
 from utils import rand_screen_pos
@@ -77,10 +77,7 @@ class Numbers:
                         pos,
                         size,
                         self.rotate_angle,
-                        os.path.join(
-                            "images",
-                            choice(["ladybug.png", "butterfly.png", "snail.png"]),
-                        ),
+                        Path.cwd() / "images" / choice(["ladybug.png", "butterfly.png", "snail.png"])
                     )
                     self.image_buffer.append(lady)
                     break

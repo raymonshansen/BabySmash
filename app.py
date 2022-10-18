@@ -1,7 +1,7 @@
 import pygame as pg
 import sys
-import os
 import json
+from pathlib import Path
 from letters_game import Letters
 from numbers_game import Numbers
 from balloons_game import Balloons
@@ -16,7 +16,7 @@ class Exit:
 
 class MainMenuBG:
     def __init__(self):
-        self.image = pg.image.load(os.path.join("images", "BabySmashBG_static.png"))
+        self.image = pg.image.load(Path.cwd() / "images" / "BabySmashBG_static.png")
         self.rect = pg.Rect(0, 0, 1920, 1080)
 
     def draw(self, screen):
@@ -177,7 +177,7 @@ class Application:
         self.current_state = self.base_state
 
     def set_icon_and_window_title(self):
-        icon = pg.image.load(os.path.join("images", "BabySmashIcon.png"))
+        icon = pg.image.load(Path.cwd() / "images" / "BabySmashIcon.png")
         pg.display.set_icon(icon)
         pg.display.set_caption("BabySmash")
 
