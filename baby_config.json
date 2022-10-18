@@ -18,7 +18,7 @@
             256,
             1024
         ],
-        "alphabet": "ABCDEFGHIJKLMNOPRSTUVWXYZÆØÅ",
+        "alphabet": "ABCDEFGHIJKLMNOPQRSTUVWXYZÆØÅ",
         "max_balloons": 7,
         "min_balloons": 3
     }
