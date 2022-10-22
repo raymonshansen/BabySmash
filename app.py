@@ -6,6 +6,7 @@ from letters_game import Letters
 from numbers_game import Numbers
 from balloons_game import Balloons
 from additive_balloons_game import AdditiveBalloons
+from substractive_balloons_game import SubstractiveBalloons 
 from utils import shadow_from_text, wrap_text
 
 
@@ -173,7 +174,7 @@ class Application:
         self.done = False
 
         self.base_state = MainMenu(
-            self.screen, self.switch_state, [Letters, Numbers, Balloons, AdditiveBalloons, Exit]
+            self.screen, self.switch_state, [Letters, Numbers, Balloons, AdditiveBalloons, SubstractiveBalloons, Exit]
         )
         self.current_state = self.base_state
 
@@ -201,6 +202,11 @@ class Application:
         elif state == "ADDITIVEBALLOONS":
             config = self.config.get_game_config(AdditiveBalloons)
             self.current_state = AdditiveBalloons(
+                self.screen, lambda: self.switch_state(), config
+            )
+        elif state == "SUBSTRACTIVEBALLOONS":
+            config = self.config.get_game_config(SubstractiveBalloons)
+            self.current_state = SubstractiveBalloons(
                 self.screen, lambda: self.switch_state(), config
             )
         elif state == "QUIT":
