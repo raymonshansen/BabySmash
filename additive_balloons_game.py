@@ -82,10 +82,10 @@ class InGameBallon:
             # pg.draw.rect(screen, pg.color.Color("blue"), self.char_rect, 1)
 
 
-class Balloons:
-    state_name = "BALLOONS"
-    config_state_name = "BALLONS_CONFIG"
-    main_menu_name = "Balloons"
+class AdditiveBalloons:
+    state_name = "ADDITIVEBALLOONS"
+    config_state_name = "ADDITIVE_BALLONS_CONFIG"
+    main_menu_name = "Additive Balloons"
 
     def __init__(self, screen, quit_func, config):
         pg.init()
@@ -109,13 +109,13 @@ class Balloons:
         return InGameBallon(char, size, pos, color)
 
     def generate_balloons(self, num):
-        letters = random.sample(self.config['alphabet'], num)
+        sums = random.sample(self.config['sums'], num)
         ret = list()
         for i in range(num):
-            ba = self.new_balloon(letters[i])
+            ba = self.new_balloon(sums[i])
             # import pdb; pdb.set_trace()
             while (ba.get_small_rect().collidelist([b.get_small_rect() for b in ret]) != -1):
-                ba = self.new_balloon(letters[i])
+                ba = self.new_balloon(sums[i])
             ret.append(ba)
         return ret
 
@@ -130,15 +130,15 @@ class Balloons:
         for event in pg.event.get():
             if event.type == KEYDOWN:
                 key_str = pg.key.name(event.key).upper()
-                if key_str == "" or key_str not in self.config['alphabet']:
-                    pass
+
                 # Do balloons
                 if key_str == "ESCAPE":
                     self.quit()
-                for balloon in self.balloons:
-                    if key_str == balloon.char:
-                        balloon.popping = True
-                        self.pop_sound.play()
+                if key_str.isnumeric():
+                    for balloon in self.balloons:
+                        if int(key_str) == eval(balloon.char):
+                            balloon.popping = True
+                            self.pop_sound.play()
                 if key_str == "SPACE":
                     self.balloons = self.generate_balloons(5)
 
