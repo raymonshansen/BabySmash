@@ -22,6 +22,15 @@
         "max_balloons": 7,
         "min_balloons": 3
     },
+    "SUBSTRACTIVE_BALLONS_CONFIG": {
+        "balloon_size": [
+            256,
+            1024
+        ],
+        "max_balloons": 7,
+        "min_balloons": 3
+    },
+    
     "BALLONS_CONFIG": {
         "balloon_size": [
             256,
