@@ -46,7 +46,7 @@ class InGameBallon:
         self.char = char
         self.rect = pg.Rect(pos, (size, size))
         path = Path.cwd() / "images" / "balloon" / f"balloon_{color}.png"
-        self.char_surf = get_balloon_char(char, size//4)
+        self.char_surf = get_balloon_char(char, size//8)
         self.char_rect = pg.Rect(pos, self.char_surf.get_size())
         self.pop_imgs = load_balloon_sprites(path, size)
         self.image = self.pop_imgs[0]
@@ -93,6 +93,7 @@ class AdditiveBalloons:
         self.screen = screen
         self.quit = quit_func
         self.config = config
+        self.buffer = []
         num = random.randint(self.config['min_balloons'], self.config['max_balloons'])
         self.balloons = self.generate_balloons(num)
         path = Path.cwd() / "sounds" / "balloon" / "balloon-pop.wav"
@@ -101,6 +102,11 @@ class AdditiveBalloons:
     @property
     def balloon_size_range(self):
         return self.config['balloon_size'][0], self.config['balloon_size'][1]
+    
+    def update_buffer(self,number):
+        if len(self.buffer)>3:
+            self.buffer.pop(0)
+        self.buffer.append(number)
 
     def new_balloon(self, char):
         size = random.randint(*self.balloon_size_range)
@@ -109,7 +115,12 @@ class AdditiveBalloons:
         return InGameBallon(char, size, pos, color)
 
     def generate_balloons(self, num):
-        sums = random.sample(self.config['sums'], num)
+        sums=[]
+        largestSum= self.config["largest_sum"]
+        for n in range(0,num):
+            firstNumber = random.randint(1,largestSum)
+            secondNumber = random.randint(0,largestSum-firstNumber)
+            sums.append('%d+%d' % (firstNumber,secondNumber))
         ret = list()
         for i in range(num):
             ba = self.new_balloon(sums[i])
@@ -135,8 +146,12 @@ class AdditiveBalloons:
                 if key_str == "ESCAPE":
                     self.quit()
                 if key_str.isnumeric():
+                    self.update_buffer(key_str)
+
                     for balloon in self.balloons:
-                        if int(key_str) == eval(balloon.char):
+                        #print(str(eval(balloon.char)))
+                        #print("".join(self.buffer))
+                        if str(eval(balloon.char)) in "".join(self.buffer):
                             balloon.popping = True
                             self.pop_sound.play()
                 if key_str == "SPACE":
